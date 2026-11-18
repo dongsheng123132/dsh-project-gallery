@@ -19,7 +19,11 @@
     "docs/screenshots-demo/",
     "README.md",
     "dsh-plugin.naming.json",
-    "LICENSE"
+    "LICENSE",
+    "README.en.md",
+    "COMPATIBILITY.md",
+    "CHANGELOG.md",
+    "scripts/"
   ],
   "dsh": {
     "bundle": {
@@ -32,7 +36,7 @@
   },
   "engines": {
     "node": ">=22",
-    "dsh": ">=0.2.1-rc.5 <0.3.0"
+    "dsh": ">=0.2.1-rc.5"
   },
   "scripts": {
     "check": "node --check adapters/dsh-plugin/plugin.mjs && node --check adapters/dsh-plugin/client.js && node --check core/lib/api.mjs && node --check web/app.js && node --test test/*.test.mjs",

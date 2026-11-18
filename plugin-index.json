@@ -57,7 +57,8 @@
           "images",
           "sessions",
           "sidebar",
-          "local-only"
+          "local-only",
+          "album"
         ],
         "labels": [
           "open-source",
@@ -75,7 +76,7 @@
             "commit": "7aaf23620900d7f605842f052fc9f2cf2dd67ff7"
           },
           "engines": {
-            "dsh": ">=0.2.1-rc.5 <0.3.0"
+            "dsh": ">=0.2.1-rc.5"
           }
         }
       ]

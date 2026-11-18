@@ -1,5 +1,15 @@
 # 项目相册 · dsh-project-gallery
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/dsh-project-gallery"><img alt="npm version" src="https://img.shields.io/npm/v/dsh-project-gallery"></a>
+  <a href="https://www.npmjs.com/package/dsh-project-gallery"><img alt="npm downloads" src="https://img.shields.io/npm/dm/dsh-project-gallery"></a>
+  <img alt="DSH tested 0.2.2-rc.1 → 0.2.2-rc.3" src="https://img.shields.io/badge/DSH_tested-0.2.2--rc.1%20%E2%86%92%200.2.2--rc.3-4c8dff">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+</p>
+
+[English](README.en.md) · **中文**
+
+
 DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过的图，以及项目目录里的图，**按项目攒成一册**。
 悬停项目行就能看最近几张；点开是相册；点大图能看到**当时你让它做什么**。
 
@@ -42,21 +52,23 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 
 ## 安装
 
-从 GitHub 直接装（不用等 npm）：
+DSH 桌面版：**设置 → 插件 → 添加插件**，填 `dsh-project-gallery`。
+
+或者命令行：
+
+```sh
+dsh plugin --profile <你的 profile> add dsh-project-gallery
+```
+
+想比 npm 版更新（跟 main 走）：
 
 ```sh
 dsh plugin --profile <你的 profile> add github:dongsheng123132/dsh-project-gallery
 ```
 
-或者 clone 本仓库后本地装：
-
-```sh
-node scripts/install.mjs --profile desktop
-```
+clone 本仓库后本地装：`node scripts/install.mjs --profile desktop`。
 
 装好后重启 DSH，左侧工具区会出现入口（不同 DSH 版本位置略有差异）。
-
-> npm 包同名 `dsh-project-gallery`；在本仓库打 tag 发布后才有 `npm i -D dsh-project-gallery`。
 
 ## 在 DSH 插件市场里搜到它
 
@@ -75,9 +87,18 @@ npm run check          # 语法 + 15 项单测
 npm run shots          # 重新生成演示图（需要 playwright）
 ```
 
+## 它贴宿主贴得多紧
+
+这个插件不是只加一行菜单：它挂一个 `/session-gallery` 前缀路由、读宿主的工作区注册表、还要在侧栏 DOM 上做悬停几何识别。
+宿主缺哪块就降级哪块（没注册表 → 悬停失效但全局相册照用；没 `connection` → 跳过鉴权判定但保留同源检查），
+细节与**宿主求值器实测表**（0.2.1-rc.5 → 0.3.0 全部放行）见 [COMPATIBILITY.md](COMPATIBILITY.md)。
+
+实用口径：`engines.dsh` 只写下界、不写上界——上界会让 DSH 一升级就直接装不上，而不是降级。
+
 ## 已知限制
 
 - 悬停预览依赖宿主 DOM（`data-row-key`）与几何推断，DSH 大版本升级后可能需要重新对位；取不到就只剩「📷 全盘相册」。
+- 目前只在 macOS 上实测（CLI 0.2.2-rc.1 / 桌面版 0.2.2-rc.3）；Windows 桌面版未验证。
 - 搜索结果里的会话行没有 `data-row-key`，悬停不生效，请用全局相册。
 - 同一张图出现在多个会话时，各会话各自保留一条关联（这是真实状态，不做跨会话合并）。
 
