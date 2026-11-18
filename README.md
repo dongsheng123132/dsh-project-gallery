@@ -43,11 +43,10 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 ## 安装
 
 ```sh
-# 从本地目录装进指定 profile（DSH 还没发布到市场时可用这个）
-node scripts/install.mjs --profile desktop
+npm i -D dsh-project-gallery     # 或者从本仓库 clone 后 node scripts/install.mjs --profile desktop
 ```
 
-或 `dsh plugin --profile <name> add ./`（具体以你的 DSH 版本为准）。
+装好后重启 DSH，左侧工具区会出现入口（不同 DSH 版本位置略有差异）。
 
 ## 开发
 
