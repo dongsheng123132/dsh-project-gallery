@@ -30,8 +30,8 @@ function normalizeWorkspace(entry) {
   }
 }
 
-export const name = 'dsh-project-gallery'
-export const inject = ['webServer']
+export const name = 'dsh-session-gallery'
+export const inject = ['webServer', 'connection']
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
