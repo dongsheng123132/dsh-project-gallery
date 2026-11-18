@@ -69,11 +69,9 @@
       "versions": [
         {
           "version": "0.1.1",
-          "publishTimestamp": 1794994660,
+          "publishTimestamp": 1794994916,
           "source": {
-            "type": "git",
-            "url": "https://github.com/dongsheng123132/dsh-project-gallery",
-            "commit": "c0fee644f7e6e37b45b900a954da3f25b502a2dd"
+            "type": "npm"
           },
           "engines": {
             "dsh": ">=0.2.1-rc.5"
