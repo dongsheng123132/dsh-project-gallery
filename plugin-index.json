@@ -1,0 +1,84 @@
+{
+  "format": 1,
+  "title": {
+    "en": "Project Gallery for DeepSeek Harness",
+    "zh": "DSH 项目相册"
+  },
+  "description": {
+    "en": "Browse the images a project or a session has seen, generated or delivered, and read what you asked for at the time.",
+    "zh": "按项目/会话浏览 AI 看过、生成过、交付过的图，并回看当时你让它做什么。"
+  },
+  "metadata": {
+    "categories": {
+      "interface": {
+        "title": {
+          "en": "Interface",
+          "zh": "界面"
+        }
+      }
+    },
+    "labels": {
+      "open-source": {
+        "title": {
+          "en": "Open source",
+          "zh": "开源"
+        }
+      },
+      "local-only": {
+        "title": {
+          "en": "Local only",
+          "zh": "只读本机"
+        }
+      }
+    },
+    "sortKeys": {}
+  },
+  "plugins": [
+    {
+      "name": "dsh-project-gallery",
+      "title": {
+        "en": "Project Gallery",
+        "zh": "项目相册"
+      },
+      "description": {
+        "en": "Gathers session attachments and project-directory images into one album per project: hover a workspace row for a preview, open a panel or the global album, and the lightbox shows the prompt/context behind each image. Reads local files only, no network, no telemetry; zero runtime dependencies.",
+        "zh": "把会话附件与项目目录里的图按项目攒成一册：悬停工作区行看预览，打开侧栏面板或全局相册，灯箱里带每张图当时对应的对话诉求与进展。只读本机文件、不发网络请求、无遥测；零运行时依赖。"
+      },
+      "author": "He Fangsheng",
+      "homepage": "https://github.com/dongsheng123132/dsh-project-gallery",
+      "repository": {
+        "url": "https://github.com/dongsheng123132/dsh-project-gallery"
+      },
+      "metadata": {
+        "category": "interface",
+        "keywords": [
+          "dsh-plugin",
+          "gallery",
+          "images",
+          "sessions",
+          "sidebar",
+          "local-only"
+        ],
+        "labels": [
+          "open-source",
+          "local-only"
+        ],
+        "sortKeys": {}
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1794993720,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/dongsheng123132/dsh-project-gallery",
+            "commit": "7aaf23620900d7f605842f052fc9f2cf2dd67ff7"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.5 <0.3.0"
+          }
+        }
+      ]
+    }
+  ]
+}
