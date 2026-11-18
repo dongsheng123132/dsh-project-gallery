@@ -112,7 +112,9 @@ export function createGalleryApi(options) {
   let building = null
 
   async function index(force) {
-    if (!force && cachedIndex && Date.now() - cachedAt < 5000) return cachedIndex
+    // 进程内缓存 20s：一次悬停会打多个接口，别每个都去读 3.7MB 的 index.json。
+    // 磁盘索引另有 60s TTL（build-index 的 INDEX_TTL_MS），过期才做增量扫描。
+    if (!force && cachedIndex && Date.now() - cachedAt < 20_000) return cachedIndex
     if (building) return building
     building = (async () => {
       const next = force

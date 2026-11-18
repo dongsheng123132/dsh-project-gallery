@@ -10,6 +10,11 @@ import { scanSessionFile } from './scan-session.mjs'
 
 export const INDEX_VERSION = 2
 
+/** 索引刷新间隔：60 秒内直接复用磁盘索引，过了才做一次增量扫描。
+ * 扫描是增量的（按会话文件 size+mtime 复用），所以这里买到的是「新图 1 分钟内出现」，
+ * 代价是一分钟最多一次 4k 文件的 stat + 变化会话的重扫。 */
+export const INDEX_TTL_MS = 60_000
+
 /** 默认会话根。`DSH_SESSIONS_ROOT` 可覆盖（测试/自检时指到假目录）。 */
 export function defaultSessionsRoot() {
   const override = process.env.DSH_SESSIONS_ROOT
@@ -254,13 +259,23 @@ export async function buildIndex(options = {}) {
   return index
 }
 
-/** 读已有索引；没有就建一份。 */
+/**
+ * 读已有索引；过期或没有就增量重建。
+ *
+ * `ttlMs`（默认 60s）内直接复用磁盘索引——不扫盘、不写盘；过期后走 buildIndex，
+ * 它按会话文件的 size+mtime 复用旧结果，只重扫变过的会话。
+ * 想立刻看到新图：传 `ttlMs: 0`（面板的「重建索引」就是 force 重建）。
+ */
 export async function readOrBuildIndex(options = {}) {
   const storeDir = options.storeDir || defaultStoreDir()
   const indexFile = path.join(storeDir, 'index.json')
+  const ttlMs = options.ttlMs ?? INDEX_TTL_MS
   try {
     const parsed = JSON.parse(await fsp.readFile(indexFile, 'utf8'))
-    if (parsed && parsed.version === INDEX_VERSION) return parsed
+    if (parsed && parsed.version === INDEX_VERSION) {
+      const age = Date.now() - Number(parsed.builtAt || 0)
+      if (Number.isFinite(age) && age >= 0 && age < ttlMs) return parsed
+    }
   } catch (error) {
     /* 没索引就建 */
   }

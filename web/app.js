@@ -233,8 +233,16 @@ function renderRail() {
 
 function renderRailFoot(data) {
   const stats = data && data.stats ? data.stats : {}
+  const age = data && data.builtAt ? Date.now() - data.builtAt : null
+  const ago = age == null
+    ? ''
+    : age < 60_000
+      ? '刚刚更新'
+      : age < 3600_000
+        ? `${Math.round(age / 60_000)} 分钟前更新`
+        : `${Math.round(age / 3600_000)} 小时前更新`
   $railFoot.innerHTML = `索引 ${stats.workspaces || 0} 工作区 / ${stats.sessions || 0} 会话 · 会话图 ${stats.images || 0} 张<br />
-    <button id="link-reindex">重建索引</button>`
+    ${ago ? `${ago} · ` : ''}<button id="link-reindex">重建索引</button>`
   const button = el('link-reindex')
   if (button) button.addEventListener('click', () => refreshAll(true))
 }
