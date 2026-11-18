@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "policy": "dsh-plugin-naming/v1",
+  "plugin": {
+    "namespace": "dongsheng123132",
+    "name": "project-gallery",
+    "coordinate": "dongsheng123132/project-gallery",
+    "packageName": "dsh-project-gallery"
+  },
+  "names": {
+    "pluginNames": ["dsh-session-gallery"],
+    "loaderIds": ["dsh-project-gallery"],
+    "services": [],
+    "tools": [],
+    "commands": [],
+    "skills": [],
+    "skillProviders": [],
+    "events": [],
+    "settingsNamespaces": [],
+    "routes": [
+      {
+        "kind": "prefix",
+        "path": "/session-gallery"
+      }
+    ]
+  }
+}

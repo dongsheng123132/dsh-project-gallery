@@ -18,12 +18,10 @@
     "demo/",
     "docs/screenshots-demo/",
     "README.md",
+    "dsh-plugin.naming.json",
     "LICENSE"
   ],
   "dsh": {
-    "engines": {
-      "dsh": ">=0.2.1-rc.5 <0.3.0"
-    },
     "bundle": {
       "patch": "./adapters/dsh-plugin/cordis.patch.yml"
     },
@@ -33,7 +31,8 @@
     }
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.5 <0.3.0"
   },
   "scripts": {
     "check": "node --check adapters/dsh-plugin/plugin.mjs && node --check adapters/dsh-plugin/client.js && node --check core/lib/api.mjs && node --check web/app.js && node --test test/*.test.mjs",
@@ -61,5 +60,6 @@
   "homepage": "https://github.com/dongsheng123132/dsh-project-gallery#readme",
   "bugs": {
     "url": "https://github.com/dongsheng123132/dsh-project-gallery/issues"
-  }
+  },
+  "author": "He Fangsheng (https://www.hequbing.com)"
 }

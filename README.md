@@ -42,11 +42,31 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 
 ## 安装
 
+从 GitHub 直接装（不用等 npm）：
+
 ```sh
-npm i -D dsh-project-gallery     # 或者从本仓库 clone 后 node scripts/install.mjs --profile desktop
+dsh plugin --profile <你的 profile> add github:dongsheng123132/dsh-project-gallery
+```
+
+或者 clone 本仓库后本地装：
+
+```sh
+node scripts/install.mjs --profile desktop
 ```
 
 装好后重启 DSH，左侧工具区会出现入口（不同 DSH 版本位置略有差异）。
+
+> npm 包同名 `dsh-project-gallery`；在本仓库打 tag 发布后才有 `npm i -D dsh-project-gallery`。
+
+## 在 DSH 插件市场里搜到它
+
+本仓库根目录的 `plugin-index.json` 就是一条插件市场索引源，不用起服务：
+
+```
+https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/plugin-index.json
+```
+
+在 DSH 里启用实验性插件市场 → 把上面这个地址添加为索引源 → 搜「项目相册」或 `project gallery`。
 
 ## 开发
 
