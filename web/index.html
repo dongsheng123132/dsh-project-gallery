@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>项目相册 · 会话图片与进展</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-mode="full">
+    <div id="app" class="app">
+      <aside class="rail" id="rail">
+        <div class="rail-head">
+          <span class="rail-title">项目相册</span>
+          <span class="rail-sub" id="rail-sub"></span>
+        </div>
+        <div class="rail-scope" id="rail-scope">
+          <button class="rail-scope-item" data-scope="all">全部图片</button>
+          <button class="rail-scope-item" data-scope="recent">最近 7 天</button>
+          <button class="rail-scope-item" data-scope="todo">有未完成待办</button>
+        </div>
+        <div class="rail-section">按项目</div>
+        <div class="rail-list" id="rail-list"></div>
+        <div class="rail-foot" id="rail-foot"></div>
+      </aside>
+
+      <main class="main">
+        <header class="toolbar">
+          <div class="tb-main">
+            <h1 class="tb-title" id="tb-title">全部图片</h1>
+            <div class="tb-chips" id="tb-chips"></div>
+          </div>
+          <div class="tb-side">
+            <div class="seg" id="seg">
+              <button class="seg-item is-on" data-kind="all">全部</button>
+              <button class="seg-item" data-kind="session">会话图</button>
+              <button class="seg-item" data-kind="file">磁盘图</button>
+            </div>
+            <input class="search" id="search" type="search" placeholder="搜文件名 / 会话标题" spellcheck="false" />
+            <button class="icon-btn" id="refresh" title="重建索引">↻</button>
+            <button class="icon-btn" id="dock-close" title="关闭 (Esc)" hidden>✕</button>
+          </div>
+        </header>
+        <section class="grid-wrap" id="grid-wrap">
+          <div class="empty" id="empty" hidden></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="lb" id="lb" hidden>
+      <div class="lb-bar">
+        <div class="lb-bar-main">
+          <span class="lb-project" id="lb-project"></span>
+          <span class="lb-session" id="lb-session"></span>
+        </div>
+        <div class="lb-bar-side">
+          <span class="lb-counter" id="lb-counter"></span>
+          <button class="icon-btn" id="lb-close" title="关闭 (Esc)">✕</button>
+        </div>
+      </div>
+
+      <div class="lb-body">
+        <button class="lb-nav lb-prev" id="lb-prev" title="上一张 (←)">‹</button>
+        <div class="lb-stage" id="lb-stage"><img class="lb-img" id="lb-img" alt="" /></div>
+        <button class="lb-nav lb-next" id="lb-next" title="下一张 (→)">›</button>
+        <aside class="lb-info">
+          <div class="lb-info-block">
+            <div class="lb-kicker">当时在做什么</div>
+            <p class="lb-prompt" id="lb-prompt"></p>
+          </div>
+          <dl class="lb-meta" id="lb-meta"></dl>
+          <div class="lb-actions" id="lb-actions"></div>
+        </aside>
+      </div>
+
+      <div class="lb-strip" id="lb-strip"></div>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

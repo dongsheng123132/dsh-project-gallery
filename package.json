@@ -1,0 +1,62 @@
+{
+  "name": "dsh-project-gallery",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness 插件「项目相册」：把会话里 AI 看过/生成过的图、以及项目目录里的图攒成一册，悬停工作区就能看，点开是类相册的大图 + 当时的对话诉求与进展。",
+  "license": "MIT",
+  "type": "module",
+  "main": "./adapters/dsh-plugin/plugin.mjs",
+  "exports": {
+    ".": "./adapters/dsh-plugin/plugin.mjs",
+    "./client": "./adapters/dsh-plugin/client.js",
+    "./cordis.patch.yml": "./adapters/dsh-plugin/cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "adapters/",
+    "core/",
+    "web/",
+    "demo/",
+    "docs/screenshots-demo/",
+    "dsh-plugin.naming.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.2.1-rc.5 <0.3.0"
+    },
+    "bundle": {
+      "patch": "./adapters/dsh-plugin/cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": []
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node --check adapters/dsh-plugin/plugin.mjs && node --check adapters/dsh-plugin/client.js && node --check core/lib/api.mjs && node --check web/app.js && node --test test/*.test.mjs",
+    "test": "node --test test/*.test.mjs",
+    "index": "node core/bin/cli.mjs index",
+    "report": "node core/bin/cli.mjs report",
+    "serve": "node core/bin/serve.mjs --port 7799",
+    "shots": "node demo/shots.mjs"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "gallery",
+    "session",
+    "images",
+    "photos",
+    "deepseek-harness"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/__GITHUB_OWNER__/dsh-project-gallery.git"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0"
+  }
+}

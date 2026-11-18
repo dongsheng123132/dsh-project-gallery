@@ -1,0 +1,12 @@
+# dsh-project-gallery bundle patch：host 半片 + 浏览器半片
+#
+# 三个名字刻意写成同一个（学自 dsh-task-board / @exccoder/dsh-media-workbench）：
+#   - npm 包名                              dsh-project-gallery
+#   - 本文件 insert.id                      dsh-project-gallery
+#   - adapters/dsh-plugin/client.js 里 __ModuleLoader__.load 的 id  dsh-project-gallery
+# 宿主 boot graph 按包名生成模块行，client.js 若用别的 id 注册会报
+# `duplicate factory registration` 把 web 启动打崩。
+- insert:
+    - id: dsh-project-gallery
+      name: dsh-project-gallery
+      config: {}
