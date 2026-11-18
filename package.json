@@ -1,6 +1,6 @@
 {
   "name": "dsh-project-gallery",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "DeepSeek Harness 插件「项目相册」：把会话里 AI 看过/生成过的图、以及项目目录里的图攒成一册，悬停工作区就能看，点开是类相册的大图 + 当时的对话诉求与进展。",
   "license": "MIT",
   "type": "module",

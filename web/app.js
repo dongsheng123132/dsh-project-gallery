@@ -25,6 +25,7 @@ const state = {
         ? 'workspace'
         : 'all',
   session: null,
+  view: params.get('view') === 'board' ? 'board' : 'grid',
   kind: 'all',
   query: '',
   workspaces: [],
@@ -306,6 +307,11 @@ function renderProgress(todos) {
 function syncDimensionUI() {
   const sessionButton = document.querySelector('#seg-dim [data-dim="session"]')
   const workspaceButton = document.querySelector('#seg-dim [data-dim="workspace"]')
+  const viewSeg = document.querySelector('#seg-view')
+  if (viewSeg) viewSeg.hidden = state.dimension !== 'all'
+  document.querySelectorAll('#seg-view .seg-item').forEach(button => {
+    button.classList.toggle('is-on', button.dataset.view === state.view)
+  })
   if (sessionButton) sessionButton.hidden = !state.activeSession
   if (workspaceButton) workspaceButton.hidden = !state.activePath
   if (!state.activeSession && state.dimension === 'session') state.dimension = 'all'
@@ -362,9 +368,71 @@ function matchesQuery(image) {
   return haystack.includes(state.query.toLowerCase())
 }
 
+/** 「全部项目」的看板：每个项目一行——最新 3 张 + 最后活动 + 待办进度。点一行就进那个项目。 */
+function renderBoard() {
+  const wrap = $gridWrap
+  const empty = el('empty')
+  wrap.querySelectorAll('.day-group').forEach(node => node.remove())
+  wrap.querySelectorAll('.board').forEach(node => node.remove())
+
+  const projects = state.workspaces
+    .filter(workspace => workspace.imageCount > 0)
+    .slice()
+    .sort((a, b) => (b.lastActivity || 0) - (a.lastActivity || 0))
+
+  if (!projects.length) {
+    empty.hidden = false
+    empty.innerHTML = '<p><b>还没有项目图片</b></p><p>在任意项目里让 AI 看/生成一张图，这里就会出现一行。</p>'
+    return
+  }
+  empty.hidden = true
+
+  const board = document.createElement('div')
+  board.className = 'board'
+  for (const workspace of projects) {
+    const todos = workspace.todos || null
+    const total = todos && todos.total ? todos.total : 0
+    const done = todos ? Math.min(todos.done || 0, total) : 0
+    const tools = workspace.toolStats || {}
+    const row = document.createElement('button')
+    row.type = 'button'
+    row.className = 'board-row'
+    row.dataset.path = workspace.path || ''
+    row.title = workspace.path || ''
+    const lastActivity = workspace.lastActivity ? ago(workspace.lastActivity) : ''
+    const meta = [
+      workspace.imageCount ? `${workspace.imageCount} 张` : '',
+      workspace.sessionCount ? `${workspace.sessionCount} 次会话` : '',
+      lastActivity ? `最后活动 ${lastActivity}` : '',
+      tools.edit ? `改文件 ${tools.edit}` : '',
+      tools.shell ? `跑命令 ${tools.shell}` : '',
+    ].filter(Boolean).join(' · ')
+    const thumbs = (workspace.thumbs || []).slice(0, 3)
+      .map(image => `<img loading="lazy" src="${thumbUrl(image, 200)}" alt="" />`)
+      .join('')
+    row.innerHTML = `
+      <span class="board-main">
+        <span class="board-name">${escapeHtml(workspace.name)}</span>
+        <span class="board-meta">${escapeHtml(meta)}</span>
+        ${total ? `<span class="board-progress"><i style="width:${Math.round((done / total) * 100)}%"></i></span><span class="board-todo">待办 ${done}/${total}</span>` : ''}
+      </span>
+      <span class="board-thumbs">${thumbs}</span>`
+    row.addEventListener('click', () => {
+      if (!workspace.path) return
+      state.dimension = 'workspace'
+      state.activePath = workspace.path
+      syncDimensionUI()
+      loadWorkspace(workspace.path)
+    })
+    board.append(row)
+  }
+  wrap.prepend(board)
+}
+
 function renderGrid() {
   const wrap = $gridWrap
   const empty = el('empty')
+  if (state.dimension === 'all' && state.view === 'board') return renderBoard()
   const images = state.images.filter(matchesQuery)
 
   if (!images.length) {
@@ -596,6 +664,13 @@ function bind() {
   })
 
   syncDimensionUI()
+  document.querySelectorAll('#seg-view .seg-item').forEach(button => {
+    button.addEventListener('click', () => {
+      state.view = button.dataset.view
+      syncDimensionUI()
+      renderGrid()
+    })
+  })
   document.querySelectorAll('#seg-dim .seg-item').forEach(button => {
     button.addEventListener('click', () => {
       state.dimension = button.dataset.dim

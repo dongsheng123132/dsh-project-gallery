@@ -38,7 +38,7 @@ The right pane defaults to whichever context is known:
 |---|---|
 | **This conversation** | Only images from the current session |
 | **This project** | Images the project used plus images inside its folder |
-| **All projects** | The latest images across projects, grouped by day — usable as a lightweight progress board |
+| **All projects** | The latest images across projects, grouped by day, or switched to a **project board** |
 
 The second row ("All / Session / Project folder") filters by **source**: session images come from
 `~/.dsh/sessions` and the attachment store; "Project folder" scans **only the current project directory**

@@ -55,6 +55,7 @@ const shots = [
   { file: '03-lightbox.png', url: '?mode=dock&path=/demo/demo-atlas&theme=light', wait: '.cell', click: '.cell' },
   { file: '04-hover-card.png', url: 'card', wait: '.sg-peek-grid img', ready: true },
   { file: '05-right-pane.png', url: 'pane', wait: 'iframe', frameWait: '.cell' },
+  { file: '06-project-board.png', url: '?mode=full&view=board&theme=dark', wait: '.board-row' },
 ]
 
 const browser = await chromium.launch({ channel: 'chrome' })

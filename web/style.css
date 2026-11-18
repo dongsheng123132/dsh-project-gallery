@@ -721,3 +721,91 @@ body[data-mode="dock"] .lb-nav {
 .tb-progress-track i { display: block; height: 100%; border-radius: 999px; background: #3b82f6; transition: width 220ms ease; }
 .tb-progress span { font-size: 11px; color: var(--muted, #9a9aa1); white-space: nowrap; }
 .tb-progress[hidden] { display: none; }
+
+/* ---------- 项目看板（「全部项目」的另一种视图） ---------- */
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 6px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.board-row:hover {
+  background: var(--bg-hover);
+  border-color: var(--line-strong);
+}
+
+.board-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.board-name {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board-progress {
+  display: block;
+  height: 4px;
+  max-width: 420px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background: rgba(127, 127, 140, 0.22);
+  overflow: hidden;
+}
+
+.board-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.board-todo {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.board-thumbs {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.board-thumbs img {
+  width: 76px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--bg-hover);
+}
