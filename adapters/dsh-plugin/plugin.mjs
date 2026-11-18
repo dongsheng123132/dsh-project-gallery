@@ -108,11 +108,13 @@ function sameOrigin(req) {
 
 /**
  * @param {import('@deepseek-ai/cordis').Context} ctx 插件上下文
- * @param {{storeDir?: string, attachmentsRoot?: string}} config 用户配置
+ * @param {{storeDir?: string, attachmentsRoot?: string, sessionsRoot?: string}} config 用户配置
  */
 export function apply(ctx, config = {}) {
   const storeDir = config.storeDir || defaultStoreDir()
   const attachmentsRoot = config.attachmentsRoot || defaultAttachmentsRoot()
+  // sessionsRoot 默认走宿主的 ~/.dsh/sessions；显式传参是为了测试与自定义 DSH home
+  const sessionsRoot = config.sessionsRoot || undefined
   const log = message => {
     try {
       ctx.logger?.info?.(message)
@@ -137,6 +139,7 @@ export function apply(ctx, config = {}) {
   const api = createGalleryApi({
     storeDir,
     attachmentsRoot,
+    sessionsRoot,
     getWorkspaces: () => {
       try {
         return (workspaceRegistry ? workspaceRegistry.list() : []).map(normalizeWorkspace)

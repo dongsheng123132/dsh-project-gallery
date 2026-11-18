@@ -13,14 +13,7 @@
 DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过的图，以及项目目录里的图，**按项目攒成一册**。
 悬停项目行就能看最近几张；点开是相册；点大图能看到**当时你让它做什么**。
 
-![全局相册](docs/screenshots-demo/01-global-album.png)
-
-![项目级面板](docs/screenshots-demo/02-project-dock.png)
-
-![灯箱：图左、上下文右、胶片条在下](docs/screenshots-demo/03-lightbox.png)
-
-> 以上三张是**虚构数据的界面示意**（`npm run shots` 生成，水印在右下角），不含任何真实项目或会话。来源见
-> [docs/screenshots-demo/PROVENANCE.md](docs/screenshots-demo/PROVENANCE.md)。
+![项目相册：图左、当时那段对话在右](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/promo-zh.png)
 
 ## 三个入口
 
@@ -34,6 +27,11 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 
 大图**不再铺满屏幕**：图在左、上下文在右（当时在做什么、时间/尺寸/体积/工具/来源/会话/第几轮/路径）、
 同会话的图在底部排成胶片条，`←/→` 翻页、`Esc` 逐层退回对话。显示用 1600px 中图秒开，想看原始像素点「看原图」。
+
+![项目级面板：按天分组 + 搜索 + 会话图/磁盘图切换](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/02-project-dock.png)
+
+> 两张界面图都是**虚构数据**（`node demo/shots.mjs` 生成截图、`node promotion/make-promo.mjs` 合成促销图），
+> 不含任何真实项目或会话；来源与重生成步骤见 [docs/screenshots-demo/PROVENANCE.md](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/PROVENANCE.md)。
 
 ## 数据从哪来
 
@@ -83,7 +81,7 @@ https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/plugi
 ## 开发
 
 ```sh
-npm run check          # 语法 + 15 项单测
+npm run check          # 语法 + 21 项单测（含宿主半片降级 6 项）
 npm run shots          # 重新生成演示图（需要 playwright）
 ```
 

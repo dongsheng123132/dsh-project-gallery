@@ -13,14 +13,10 @@ A DeepSeek Harness (DSH) plugin that gathers the images a project has been worki
 the AI read or produced, plus images in the project directory — into **one album per project**. Hover a project
 row for the latest few; open the album; open an image and see **what you asked for at the time**.
 
-![Global album](docs/screenshots-demo/01-global-album.png)
+![Project Gallery: image left, the conversation behind it right](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/promo-en.png)
 
-![Project panel](docs/screenshots-demo/02-project-dock.png)
-
-![Lightbox: image left, context right, filmstrip below](docs/screenshots-demo/03-lightbox.png)
-
-> These three are **interface mockups with fictional data** (`npm run shots`), watermarked bottom-right; no real
-> project or session appears in them. Provenance: [docs/screenshots-demo/PROVENANCE.md](docs/screenshots-demo/PROVENANCE.md).
+> The interface is currently Chinese-only; this English page documents it. Both images use **fictional data**
+> (`node demo/shots.mjs`, `node promotion/make-promo.mjs`) — no real project or session appears in them.
 
 ## Three entry points
 
@@ -35,6 +31,8 @@ row for the latest few; open the album; open an image and see **what you asked f
 The image does not take over the screen: image on the left, context on the right (what was being done, time,
 dimensions, size, tool, source, session, turn number, path), that session's images as a filmstrip at the bottom.
 `←/→` to page, `Esc` to step back. A 1600px rendition opens instantly; "view original" loads the full pixels.
+
+![Project panel: day-grouped grid, search, session images / on-disk images](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/02-project-dock.png)
 
 ## Where the data comes from
 
@@ -85,7 +83,7 @@ installation instead of degrading.
 ## Development
 
 ```sh
-npm run check                                    # syntax + 15 unit tests
+npm run check                                    # syntax + 21 unit tests (6 host-half degradation cases)
 node scripts/compat-gate.mjs <dsh install dir>   # host's own compatibility evaluator
 npm run shots                                    # regenerate the demo screenshots (needs playwright)
 ```

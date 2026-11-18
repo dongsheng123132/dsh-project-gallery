@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.2 — 2026-11-18
+
+回归测试与门面版本；行为不变（只有一处可选配置透传）。
+
+- 新增 `test/plugin.test.mjs`：宿主半片 6 项降级测试——没有 `workspaceRegistry`、没有 `connection`、
+  `connection` 拒绝请求（403）、跨源 Origin 被挡、静态页 200、未知接口 404。全部用假 ctx 起真 http 路由。
+- `apply()` 支持可选 `config.sessionsRoot`：测试与自定义 DSH home 不用再碰真实的 `~/.dsh/sessions`。
+- 新增促销图 `docs/promo-zh.png` / `docs/promo-en.png`（1600×900，左文右界面；界面部分仍是虚构数据），
+  生成脚本 `promotion/make-promo.mjs`；README 首图换成它，细节图收进正文。
+- 测试数 15 → 21。
+
 ## 0.1.1 — 2026-11-18
 
 首个对外可用版本（0.1.0 只走到 npm 暂存占位、未批准，内容被本版取代）。

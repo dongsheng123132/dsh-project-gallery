@@ -51,7 +51,7 @@ node scripts/compat-gate.mjs ~/.local/lib/node_modules/@deepseek-ai/dsh
 
 | 环境 | 版本 | 验过什么 |
 | --- | --- | --- |
-| macOS，DSH CLI | 0.2.2-rc.1 | `npm run check` 15/15；`compat-gate` 全部 accepted |
+| macOS，DSH CLI | 0.2.2-rc.1 | `npm run check` 21/21；`compat-gate` 全部 accepted |
 | macOS，DSH 桌面版 | 0.2.2-rc.3 | 日常使用：悬停预览、侧栏相册、全局相册、灯箱、静音 |
 
 **没验过的**：Windows 桌面版；0.2.1-rc.5 只过了安装闸门求值器，没在真机上跑过界面；0.3.x 及以上没测。
