@@ -808,7 +808,7 @@ window.__ModuleLoader__.load({
       }, 700)
     }
 
-    function bindHostInteractions() {
+    function bindHostInteractions(ctx) {
       const teardown = []
       const on = (target, type, handler, options) => {
         target.addEventListener(type, handler, options)
@@ -899,7 +899,7 @@ window.__ModuleLoader__.load({
 
       // 右侧栏 tab：宿主官方席位（sidebarRightTabs + slots）。
       // 写法对齐宿主自己的 provider（scope.effect 托管清理）；注册失败就整段跳过，
-      // 悬停卡片与浮层照常工作。
+      // 悬停卡片、键盘快捷键与浮层照常工作。
       try {
         ctx.inject(['sidebarRightTabs', 'slots', 'sidebarRight'], scope => {
           try {
@@ -934,6 +934,80 @@ window.__ModuleLoader__.load({
       } catch (error) {
         /* 没有右栏席位的宿主 */
       }
+
+      on(document, 'keydown', event => {
+        if ((event.metaKey || event.ctrlKey) && event.shiftKey && (event.key === 'g' || event.key === 'G')) {
+          event.preventDefault()
+          if (hoverState.global) closeGlobal()
+          else openGlobal()
+          return
+        }
+        if (event.key !== 'Escape') return
+        if (hoverState.strip) {
+          event.stopPropagation()
+          hideStrip(true)
+          return
+        }
+        if (hoverState.global) {
+          event.stopPropagation()
+          closeGlobal()
+          return
+        }
+        if (hoverState.dock) {
+          event.stopPropagation()
+          closeDock()
+        }
+      })
+
+      const onAltDown = event => {
+        if (event.key !== 'Alt') return
+        altHeld = true
+        // 指针已经在行上时按 ⌥ 也能出来，不用挪鼠标重进
+        const row = hoverState.row || hoverState.lastRow
+        if (row && row.isConnected && !hoverState.strip) armPeek(row, true)
+      }
+      const onAltUp = event => {
+        if (event.key === 'Alt') altHeld = false
+      }
+      on(window, 'keydown', onAltDown, true)
+      on(window, 'keyup', onAltUp, true)
+      on(window, 'blur', () => { altHeld = false })
+
+      on(window, 'resize', () => {
+        if (hoverState.dock) placeDock(hoverState.dock, hoverState.dock.dataset.expanded === '1')
+      })
+
+      on(window, 'message', event => {
+        if (event.origin !== location.origin) return
+        const message = event.data || {}
+        if (message.type === 'dsh-gallery:expand') {
+          if (!hoverState.dock) return
+          hoverState.dock.dataset.expanded = '1'
+          placeDock(hoverState.dock, true)
+        }
+        if (message.type === 'dsh-gallery:collapse') {
+          if (!hoverState.dock) return
+          hoverState.dock.dataset.expanded = '0'
+          placeDock(hoverState.dock, false)
+        }
+        if (message.type === 'dsh-gallery:close') {
+          if (hoverState.global) closeGlobal()
+          else closeDock()
+        }
+        if (message.type === 'dsh-gallery:open-right') {
+          openRightPane({ path: String(message.path || ''), session: String(message.sessionId || '') })
+          if (hoverState.dock) closeDock()
+        }
+        if (message.type === 'dsh-gallery:open-session') {
+          const sessionId = String(message.sessionId || '')
+          const row = document.querySelector(`[data-row-key="session:${sessionId}"], [data-row-key="session:${sessionId.replace(/^session-/, '')}"]`)
+          if (row) {
+            closeDock()
+            row.scrollIntoView({ block: 'nearest' })
+            row.click()
+          }
+        }
+      })
 
       // 索引可能还没建：后台预热一次（静音判定也要用 id→path 映射，所以尽早拉）
       loadSummary().catch(() => {})
@@ -984,7 +1058,7 @@ window.__ModuleLoader__.load({
       }
 
       ctx.effect(() => {
-        const dispose = bindHostInteractions()
+        const dispose = bindHostInteractions(ctx)
         return () => {
           if (typeof dispose === 'function') dispose()
           hideStrip(true)

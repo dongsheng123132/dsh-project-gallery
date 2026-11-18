@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.7 — 2026-11-18
+
+修 0.1.6 的回归：整理右侧栏代码时误删了键盘与 iframe 消息监听（⌘⇧G、Esc 分层退出、面板 expand/collapse/close 全失效）。
+0.1.6 已 deprecate，请用本版。
+
+- 恢复 `document keydown`（⌘⇧G 开合全局相册、Esc 按层退回）、`⌥` 强制预览、`window resize` 重摆面板、
+  以及 `dsh-gallery:expand/collapse/close/open-session` 的 iframe 消息处理。
+- 新增 `test/client-tab.test.mjs`：在假 window/document 里把 client.js 装一遍，断言右栏 tab 注册、
+  正文席位、消息驱动打开右栏都成立——这次就是它先抓到的 bug。
+- 右侧栏 tab 本身不变（仍走 host 的 sidebarRightTabs + slots 席位）。
+
 ## 0.1.6 — 2026-11-18
 
 新增「右侧栏 · 项目相册 tab」——把相册变成常驻右栏，而不是每次点开浮层。
