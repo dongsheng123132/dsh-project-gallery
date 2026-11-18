@@ -28,6 +28,9 @@
           <div class="tb-main">
             <h1 class="tb-title" id="tb-title">全部图片</h1>
             <div class="tb-chips" id="tb-chips"></div>
+            <div class="tb-progress" id="tb-progress" hidden>
+              <b class="tb-progress-track"><i id="tb-progress-bar"></i></b><span id="tb-progress-text"></span>
+            </div>
           </div>
           <div class="tb-side">
             <div class="seg" id="seg">
@@ -37,6 +40,7 @@
             </div>
             <input class="search" id="search" type="search" placeholder="搜文件名 / 会话标题" spellcheck="false" />
             <button class="icon-btn" id="refresh" title="重建索引">↻</button>
+            <button class="icon-btn" id="open-right" title="停靠到右侧栏">⇥</button>
             <button class="icon-btn" id="dock-close" title="关闭 (Esc)" hidden>✕</button>
           </div>
         </header>

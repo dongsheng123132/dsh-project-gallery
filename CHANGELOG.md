@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.6 — 2026-11-18
+
+新增「右侧栏 · 项目相册 tab」——把相册变成常驻右栏，而不是每次点开浮层。
+
+- 走宿主正式席位 `ctx.sidebarRightTabs.register({ id, kind, priority:'extension', keepMounted, guide })`
+  + `ctx.slots.register({ name:'sidebar.right.pane.tab', key: id })`；宿主右栏 8 类 tab 里没有图片类，这一格原本是空的。
+- 右栏正文是一个同源 iframe：带 `path` 就落成该项目的相册，带 `session` 就落成会话相册，都不带就是「最新图片」。
+- 面板/右栏新增「停靠到右侧」按钮（⇥），把当前正在看的面板搬进右栏；「更多工具」引导页也能直接打开。
+- 面板顶部新增**进展条**（待办完成度），配合原有 chips（会话图/磁盘图/改文件/跑命令）一起看进展。
+- 老宿主没有这套席位时整段跳过，悬停卡片与浮层照常工作（不抛错、不影响其它功能）。
+- 新增演示图 `docs/screenshots-demo/05-right-pane.png`（对话 + 右栏相册）。
+
 ## 0.1.5 — 2026-11-18
 
 降负载：把「每分钟重写 7MB」和「浏览器每秒轮询」去掉，并留下可复跑的实测数据。

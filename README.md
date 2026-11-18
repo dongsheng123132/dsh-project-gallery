@@ -15,13 +15,16 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 
 ![项目相册：图左、当时那段对话在右](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/promo-zh.png)
 
-## 三个入口
+## 四个入口
 
 | 位置 | 打开什么 |
 |---|---|
 | 悬停项目 / 对话行**右侧的 ⋯ 区** | 弹一张小卡：项目名 + 「N 张图 · 待办 x/y」+ 2×2 缩略图，可 📌 固定、可 ⊘ 静音该项目 |
 | 卡片里「打开相册」/ 点缩略图 | 右侧面板（420px）：按天分组的网格 + 搜索 + 会话图/磁盘图切换 |
 | 工作区头部 **📷** 或 **⌘⇧G** | 全局相册浮层：左侧按项目、右侧按天网格 |
+| **右侧栏「项目相册」tab** | 常驻右栏：当前项目/会话的最新图 + 进展条（待办完成度）；宿主官方席位，可拖动、可全屏 |
+
+![右侧栏「项目相册」tab：左边继续对话，右边看图和进展](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/05-right-pane.png)
 
 ![悬停工作区行：先看最近 4 张，可固定、可静音](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/04-hover-card.png)
 
@@ -100,6 +103,9 @@ npm run shots          # 重新生成演示图（需要 playwright）
 细节与**宿主求值器实测表**（0.2.1-rc.5 → 0.3.0 全部放行）见 [COMPATIBILITY.md](COMPATIBILITY.md)。
 
 实用口径：`engines.dsh` 只写下界、不写上界——上界会让 DSH 一升级就直接装不上，而不是降级。
+
+右侧栏 tab 走的是宿主正式的 `sidebarRightTabs` + `slots` 席位（宿主 8 个右栏 tab 里没有图片类，这一格是空的）；
+宿主没有这个席位时，插件自动退回原来的右侧浮层，功能不丢。
 
 ## 已知限制
 

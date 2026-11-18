@@ -27,7 +27,7 @@ function imagesFor(project, count = 12) {
   const now = Date.parse('2026-11-18T11:20:00+08:00')
   return Array.from({ length: count }, (_, index) => ({
     key: `${project.id}-${index}`,
-    sha: `demo-${index % 4}`,
+    sha: `demo-${index % 8}`,
     name: NAME[index % 4],
     source: index % 3 === 2 ? 'file' : 'session',
     filePath: `/demo/${project.id}/${NAME[index % 4]}`,
@@ -121,6 +121,7 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (file === 'card') return send(response, path.join(here, 'card.html'), 'text/html; charset=utf-8')
+  if (file === 'pane') return send(response, path.join(here, 'pane.html'), 'text/html; charset=utf-8')
   if (file === 'client.js') return send(response, path.join(root, 'adapters', 'dsh-plugin', 'client.js'), 'text/javascript; charset=utf-8')
   if (!file || file === '/') return send(response, path.join(root, 'web/index.html'), 'text/html; charset=utf-8')
   if (file.endsWith('.js')) return send(response, path.join(root, 'web', path.basename(file)), 'text/javascript; charset=utf-8')

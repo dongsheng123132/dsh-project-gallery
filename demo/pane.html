@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>右侧栏 · 项目相册（界面示意）</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    background: #fbfbfc;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
+    color: #2c2c31;
+  }
+  .conversation {
+    flex: 1;
+    padding: 26px 34px;
+    border-right: 1px solid #ececf0;
+    overflow: hidden;
+  }
+  .conversation .head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .conversation .head i { width: 9px; height: 9px; border-radius: 50%; background: #5b5bd6; display: block; }
+  .conversation .head b { font-size: 14px; font-weight: 600; }
+  .conversation .head span { font-size: 12px; color: #9a9aa1; margin-left: auto; }
+  .turn { margin-bottom: 18px; }
+  .turn .who { font-size: 11px; color: #9a9aa1; margin-bottom: 6px; }
+  .turn p { margin: 0 0 8px; font-size: 13px; line-height: 1.7; color: #3f4552; }
+  .ghost { height: 11px; border-radius: 6px; background: #f0f0f4; margin: 9px 0; }
+  .pane {
+    width: 420px;
+    flex: 0 0 420px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  .pane .tabs {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-bottom: 1px solid #ececf0;
+  }
+  .pane .tab {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 12px; border-radius: 8px; background: #f2f2f6;
+    font-size: 12px; color: #3f4552;
+  }
+  .pane .tab b { width: 6px; height: 6px; border-radius: 50%; background: #5b5bd6; }
+  .pane .tab.is-on { background: #ebeafc; color: #2b2b6b; }
+  .pane .tab .x { color: #9a9aa1; margin-left: 4px; }
+  .pane iframe { flex: 1; width: 100%; border: 0; display: block; }
+</style>
+</head>
+<body>
+  <div class="conversation">
+    <div class="head"><i></i><b>DSH 插件开源发布与推广</b><span>⌘⇧G 打开全部项目</span></div>
+    <div class="turn">
+      <div class="who">你</div>
+      <p>把这次的截图和演示图整理一下，顺便看看进展。</p>
+    </div>
+    <div class="turn">
+      <div class="who">DeepSeek</div>
+      <p>已生成演示图与促销图，索引也刷新了；右侧栏相册里就是这次产生的图。</p>
+      <div class="ghost" style="width:78%"></div>
+      <div class="ghost" style="width:64%"></div>
+      <div class="ghost" style="width:71%"></div>
+    </div>
+    <div class="turn">
+      <div class="who">你</div>
+      <p>进展看得见了。</p>
+    </div>
+  </div>
+  <div class="pane">
+    <div class="tabs">
+      <span class="tab"><b></b>会话</span>
+      <span class="tab is-on"><b></b>项目相册<span class="x">✕</span></span>
+    </div>
+    <iframe src="/session-gallery/?mode=dock&path=/demo/demo-atlas&theme=light" title="项目相册"></iframe>
+  </div>
+  <script>
+    // 只用于示意：iframe 加载完后把水印放进去（和 shots.mjs 的页脚水印一致）
+    const frame = document.querySelector('iframe')
+    frame.addEventListener('load', () => {
+      try {
+        const doc = frame.contentDocument
+        const mark = doc.createElement('div')
+        mark.style.cssText = 'position:fixed;right:12px;bottom:8px;z-index:9999;font:11px/1.4 -apple-system,sans-serif;color:#7b8794;background:#ffffffcc;border:1px solid #e3e8ef;border-radius:6px;padding:3px 8px'
+        mark.textContent = 'dsh-project-gallery ' + (window.__SG_VERSION__ || '') + ' · 界面示意（虚构数据）'
+        doc.body.appendChild(mark)
+      } catch (error) { /* 同源失败就算了 */ }
+    })
+  </script>
+</body>
+</html>

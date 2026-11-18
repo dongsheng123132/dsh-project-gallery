@@ -249,6 +249,21 @@ function renderRailFoot(data) {
 
 /* ---------------- 渲染：工具条 ---------------- */
 
+/** 进展条：待办完成度。没有待办就整条隐藏，不占位置。 */
+function renderProgress(todos) {
+  const wrap = el('tb-progress')
+  if (!wrap) return
+  const total = todos && Number(todos.total) || 0
+  if (!total) {
+    wrap.hidden = true
+    return
+  }
+  const done = Math.max(0, Math.min(total, Number(todos.done) || 0))
+  wrap.hidden = false
+  el('tb-progress-bar').style.width = `${Math.round((done / total) * 100)}%`
+  el('tb-progress-text').textContent = `进展 ${done}/${total}`
+}
+
 function renderToolbar() {
   if (state.activePath && state.workspace) {
     const workspace = state.workspace
@@ -257,6 +272,7 @@ function renderToolbar() {
     chips.push(`<span class="chip">${workspace.sessionImageCount || 0} 张会话图</span>`)
     chips.push(`<span class="chip">${workspace.fileImageCount || 0} 张磁盘图</span>`)
     if (workspace.todos) chips.push(`<span class="chip">待办 ${workspace.todos.done}/${workspace.todos.total}</span>`)
+    renderProgress(workspace.todos)
     const tools = workspace.toolStats || {}
     if (tools.edit) chips.push(`<span class="chip">改文件 ${tools.edit}</span>`)
     if (tools.shell) chips.push(`<span class="chip">跑命令 ${tools.shell}</span>`)
@@ -265,6 +281,7 @@ function renderToolbar() {
     document.title = `${workspace.name} · 项目相册`
     return
   }
+  renderProgress(null)
   $toolbarTitle.textContent = state.scope === 'recent' ? '最近 7 天' : state.scope === 'todo' ? '有未完成待办' : '全部图片'
   const total = state.images.length
   $toolbarChips.innerHTML = `<span class="chip">${total} 张</span>` + (state.loading ? '<span class="chip">载入中…</span>' : '')
@@ -511,6 +528,12 @@ function bind() {
   })
 
   el('refresh').addEventListener('click', () => refreshAll(true))
+  const openRight = el('open-right')
+  if (openRight) {
+    openRight.addEventListener('click', () => {
+      postToHost({ type: 'dsh-gallery:open-right', path: state.activePath, sessionId: state.activeSession })
+    })
+  }
   const dockClose = el('dock-close')
   if (dockClose) {
     dockClose.hidden = false

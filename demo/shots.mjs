@@ -54,6 +54,7 @@ const shots = [
   { file: '02-project-dock.png', url: '?mode=dock&path=/demo/demo-atlas&theme=light', wait: '.cell' },
   { file: '03-lightbox.png', url: '?mode=dock&path=/demo/demo-atlas&theme=light', wait: '.cell', click: '.cell' },
   { file: '04-hover-card.png', url: 'card', wait: '.sg-peek-grid img', ready: true },
+  { file: '05-right-pane.png', url: 'pane', wait: 'iframe', frameWait: '.cell' },
 ]
 
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -80,6 +81,7 @@ for (const shot of shots) {
   await page.goto(base + shot.url, { waitUntil: 'domcontentloaded' })
   await page.waitForSelector(shot.wait, { timeout: 20000 })
   if (shot.ready) await page.waitForFunction(() => document.body.dataset.ready === '1')
+  if (shot.frameWait) await page.frameLocator('iframe').locator(shot.frameWait).first().waitFor({ timeout: 20000 })
   await page.waitForTimeout(900)
   if (shot.click) {
     await page.click(shot.click)

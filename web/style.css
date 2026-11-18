@@ -713,3 +713,11 @@ body[data-mode="dock"] .lb-nav {
   z-index: 60;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
+
+
+/* 进展条：待办完成度（右侧栏 tab 里最有用） */
+.tb-progress { display: flex; align-items: center; gap: 8px; margin-top: 7px; width: 100%; max-width: 340px; }
+.tb-progress-track { flex: 1; height: 4px; border-radius: 999px; background: rgba(127,127,140,.22); overflow: hidden; }
+.tb-progress-track i { display: block; height: 100%; border-radius: 999px; background: #3b82f6; transition: width 220ms ease; }
+.tb-progress span { font-size: 11px; color: var(--muted, #9a9aa1); white-space: nowrap; }
+.tb-progress[hidden] { display: none; }

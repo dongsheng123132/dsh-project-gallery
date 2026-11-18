@@ -19,6 +19,9 @@ window.__ModuleLoader__.load({
     const PAGE = `${BASE}/`
     const API = `${BASE}/api`
     const LABEL = { zh: '项目相册', en: 'Project Album' }
+    // 右侧栏 tab：宿主官方扩展点（sidebarRightTabs + slots）。kind 是我们自己的页类型。
+    const TAB_KIND = 'dsh-project-gallery'
+    const TAB_ID = 'dsh-project-gallery:album'
     const TITLE = { zh: '项目相册：会话图片与工作进展', en: 'Project album: session images and progress' }
 
     let lang = /^en\b/i.test(navigator.language) ? 'en' : 'zh'
@@ -680,6 +683,50 @@ window.__ModuleLoader__.load({
       dock.style.height = `${Math.round(Math.min(640, window.innerHeight * 0.68))}px`
     }
 
+    /**
+     * 右侧栏 tab 的正文：一个同源 iframe，指向我们自己的图库页。
+     * 没带 path 时落成「全部项目 / 最新图片」，带了就落成那个项目（或那个会话）的相册。
+     */
+    function GalleryPaneBody({ useTabInfo }) {
+      let params = {}
+      try {
+        const info = typeof useTabInfo === 'function' ? useTabInfo() : null
+        params = (info && info.tab && info.tab.navigation && info.tab.navigation.params) || {}
+      } catch (error) {
+        params = {}
+      }
+      const path = typeof params.path === 'string' ? params.path : ''
+      const session = typeof params.session === 'string' ? params.session : ''
+      const query = new URLSearchParams({ mode: 'dock', theme: scheme, lang })
+      if (path) query.set('path', path)
+      if (session) query.set('session', session)
+      return h('iframe', {
+        className: 'sg-pane-frame',
+        src: `${PAGE}?${query.toString()}`,
+        title: TITLE[lang],
+        style: { display: 'block', width: '100%', height: '100%', border: '0', background: 'transparent' },
+      })
+    }
+
+    /** 在右侧栏打开相册 tab；宿主没有这个席位时退回原来的右侧浮层。 */
+    function openRightPane(params) {
+      if (typeof hoverState.openAlbumTab === 'function') {
+        try {
+          hoverState.openAlbumTab(params || {})
+          return true
+        } catch (error) {
+          /* 席位在但打不开（比如没有会话）：退回浮层 */
+        }
+      }
+      const target = params || {}
+      if (target.path || target.session) {
+        openDock(target.path || '', null, target.session || '')
+        return false
+      }
+      openGlobal()
+      return false
+    }
+
     /** 全局相册：覆盖主区的浮层（不占常驻位置），Esc/✕ 关闭。 */
     function openGlobal() {
       if (hoverState.global) return
@@ -850,75 +897,43 @@ window.__ModuleLoader__.load({
       hoverState.stopHeaderWatch = stopHeaderWatch
       teardown.push(stopHeaderWatch)
 
-      on(document, 'keydown', event => {
-        if ((event.metaKey || event.ctrlKey) && event.shiftKey && (event.key === 'g' || event.key === 'G')) {
-          event.preventDefault()
-          if (hoverState.global) closeGlobal()
-          else openGlobal()
-          return
-        }
-        if (event.key !== 'Escape') return
-        if (hoverState.strip) {
-          event.stopPropagation()
-          hideStrip(true)
-          return
-        }
-        if (hoverState.global) {
-          event.stopPropagation()
-          closeGlobal()
-          return
-        }
-        if (hoverState.dock) {
-          event.stopPropagation()
-          closeDock()
-        }
-      })
-
-      const onAltDown = event => {
-        if (event.key !== 'Alt') return
-        altHeld = true
-        // 指针已经在行上时按 ⌥ 也能出来，不用挪鼠标重进
-        const row = hoverState.row || hoverState.lastRow
-        if (row && row.isConnected && !hoverState.strip) armPeek(row, true)
-      }
-      const onAltUp = event => {
-        if (event.key === 'Alt') altHeld = false
-      }
-      on(window, 'keydown', onAltDown, true)
-      on(window, 'keyup', onAltUp, true)
-      on(window, 'blur', () => { altHeld = false })
-
-      on(window, 'resize', () => {
-        if (hoverState.dock) placeDock(hoverState.dock, hoverState.dock.dataset.expanded === '1')
-      })
-
-      on(window, 'message', event => {
-        if (event.origin !== location.origin) return
-        const message = event.data || {}
-        if (message.type === 'dsh-gallery:expand') {
-          if (!hoverState.dock) return
-          hoverState.dock.dataset.expanded = '1'
-          placeDock(hoverState.dock, true)
-        }
-        if (message.type === 'dsh-gallery:collapse') {
-          if (!hoverState.dock) return
-          hoverState.dock.dataset.expanded = '0'
-          placeDock(hoverState.dock, false)
-        }
-        if (message.type === 'dsh-gallery:close') {
-          if (hoverState.global) closeGlobal()
-          else closeDock()
-        }
-        if (message.type === 'dsh-gallery:open-session') {
-          const sessionId = String(message.sessionId || '')
-          const row = document.querySelector(`[data-row-key="session:${sessionId}"], [data-row-key="session:${sessionId.replace(/^session-/, '')}"]`)
-          if (row) {
-            closeDock()
-            row.scrollIntoView({ block: 'nearest' })
-            row.click()
+      // 右侧栏 tab：宿主官方席位（sidebarRightTabs + slots）。
+      // 写法对齐宿主自己的 provider（scope.effect 托管清理）；注册失败就整段跳过，
+      // 悬停卡片与浮层照常工作。
+      try {
+        ctx.inject(['sidebarRightTabs', 'slots', 'sidebarRight'], scope => {
+          try {
+            scope.effect(() => scope.sidebarRightTabs.register({
+              id: TAB_ID,
+              kind: TAB_KIND,
+              priority: 'extension',
+              keepMounted: true,
+              title: () => (lang === 'en' ? 'Project album' : '项目相册'),
+              guide: [{
+                id: 'album',
+                order: 60,
+                title: () => (lang === 'en' ? 'Project album' : '项目相册'),
+                description: () => (lang === 'en' ? 'Latest images from this session and its project' : '这次会话与它所在项目里最新的图'),
+              }],
+            }), 'dsh-project-gallery: right-pane type')
+          } catch (error) {
+            /* 重复注册或宿主不支持这个席位 */
           }
-        }
-      })
+          try {
+            scope.effect(() => scope.slots.inject('sidebar.right.pane.tab', () =>
+              scope.slots.register({ name: 'sidebar.right.pane.tab', key: TAB_ID }, GalleryPaneBody)),
+            'dsh-project-gallery: right-pane body')
+          } catch (error) {
+            /* slots.inject 不可用 */
+          }
+          hoverState.openAlbumTab = params => scope.sidebarRight.openTab(TAB_KIND, { params: params || {} })
+          teardown.push(() => {
+            hoverState.openAlbumTab = null
+          })
+        })
+      } catch (error) {
+        /* 没有右栏席位的宿主 */
+      }
 
       // 索引可能还没建：后台预热一次（静音判定也要用 id→path 映射，所以尽早拉）
       loadSummary().catch(() => {})
