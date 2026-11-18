@@ -110,6 +110,30 @@ for (const shot of shots) {
   await shotContext.close()
 }
 
+// 窄容器（右侧栏那种 470px 宽）：灯箱应该是上下堆叠，不是左右分栏
+{
+  const narrow = await browser.newContext({ viewport: { width: 470, height: 760 }, deviceScaleFactor: 2, colorScheme: 'dark', reducedMotion: 'reduce' })
+  const narrowPage = await narrow.newPage()
+  await narrowPage.goto(base + '?mode=dock&path=/demo/demo-atlas&theme=dark', { waitUntil: 'domcontentloaded' })
+  await narrowPage.waitForSelector('.cell', { timeout: 20000 })
+  await narrowPage.click('.cell')
+  await narrowPage.waitForSelector('.lb-info', { timeout: 20000 })
+  await narrowPage.waitForTimeout(800)
+  await narrowPage.evaluate(() => {
+    let node = document.getElementById('demo-watermark')
+    if (!node) {
+      node = document.createElement('div')
+      node.id = 'demo-watermark'
+      node.style.cssText = 'position:fixed;right:10px;bottom:8px;z-index:99999;font:10px/1.4 -apple-system,system-ui,sans-serif;color:#7b8794;background:#ffffffcc;border:1px solid #e3e8ef;border-radius:6px;padding:2px 6px;pointer-events:none'
+      document.body.appendChild(node)
+    }
+    node.textContent = 'dsh-project-gallery · 界面示意（虚构数据）'
+  })
+  await narrowPage.screenshot({ path: path.join(out, '07-lightbox-narrow.png') })
+  console.log('✓ 07-lightbox-narrow.png')
+  await narrow.close()
+}
+
 await browser.close()
 server.kill()
 

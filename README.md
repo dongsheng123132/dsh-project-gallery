@@ -53,8 +53,16 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 
 ## 灯箱
 
-大图**不再铺满屏幕**：图在左、上下文在右（当时在做什么、时间/尺寸/体积/工具/来源/会话/第几轮/路径）、
-同会话的图在底部排成胶片条，`←/→` 翻页、`Esc` 逐层退回对话。显示用 1600px 中图秒开，想看原始像素点「看原图」。
+大图**不再铺满屏幕**，而是按容器宽度换布局：
+
+- **宽容器（全屏 / 全局相册）**：图在左、上下文在右（当时在做什么、时间/尺寸/体积/工具/来源/会话/第几轮/路径），
+  底部胶片条 —— YouTube 那种布局。
+- **窄容器（右侧栏 tab / 窄窗口，≤760px）**：自动改成**上下堆叠**——图在上占满宽度，详情在下方，
+  翻页按钮压在图上。右栏里再左右分栏会把图挤成邮票、右边留一大条空白。
+
+`←/→` 翻页、`Esc` 逐层退回对话；显示用 1600px 中图秒开，想看原始像素点「看原图」。
+
+![右侧栏里的灯箱：窄容器自动上下堆叠](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/07-lightbox-narrow.png)
 
 ![项目级面板：按天分组 + 搜索 + 会话图/磁盘图切换](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/02-project-dock.png)
 
