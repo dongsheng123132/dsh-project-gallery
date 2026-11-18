@@ -53,9 +53,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/__GITHUB_OWNER__/dsh-project-gallery.git"
+    "url": "git+https://github.com/dongsheng123132/dsh-project-gallery.git"
   },
   "devDependencies": {
     "playwright": "^1.55.0"
+  },
+  "homepage": "https://github.com/dongsheng123132/dsh-project-gallery#readme",
+  "bugs": {
+    "url": "https://github.com/dongsheng123132/dsh-project-gallery/issues"
   }
 }
