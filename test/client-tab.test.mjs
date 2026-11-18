@@ -149,6 +149,10 @@ test('client.js 在宿主里装起来时，会注册右侧栏 tab 与正文席�
   assert.equal(tree.type, 'iframe')
   assert.match(tree.props.src, /mode=dock/)
 
+  // 宿主把 tab 绑在某个会话上时：正文应该带上 session 参数（默认落在「本次对话」）
+  const sessionTree = body.body({ useTabInfo: () => ({ tab: { sessionId: 'session-abc', navigation: { params: {} } } }) })
+  assert.match(sessionTree.props.src, /session=session-abc/)
+
   // 收拾定时器（宿主头部最多等 12 秒），否则测试进程要陪着等
   for (const dispose of cleanups.reverse()) {
     try { if (typeof dispose === 'function') dispose() } catch (error) { /* 同上 */ }

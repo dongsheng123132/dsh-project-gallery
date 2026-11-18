@@ -689,14 +689,19 @@ window.__ModuleLoader__.load({
      */
     function GalleryPaneBody({ useTabInfo }) {
       let params = {}
+      let info = null
       try {
-        const info = typeof useTabInfo === 'function' ? useTabInfo() : null
+        info = typeof useTabInfo === 'function' ? useTabInfo() : null
         params = (info && info.tab && info.tab.navigation && info.tab.navigation.params) || {}
       } catch (error) {
         params = {}
+        info = null
       }
       const path = typeof params.path === 'string' ? params.path : ''
-      const session = typeof params.session === 'string' ? params.session : ''
+      // 会话 id 优先取显式 params；宿主把 tab 绑定在某个会话上时，也从 tab 记录里拿。
+      const session = typeof params.session === 'string' && params.session
+        ? params.session
+        : String(info?.tab?.sessionId || info?.sessionId || '')
       const query = new URLSearchParams({ mode: 'dock', theme: scheme, lang })
       if (path) query.set('path', path)
       if (session) query.set('session', session)

@@ -107,15 +107,24 @@ const server = http.createServer(async (request, response) => {
     if (route === 'session') {
       return json(response, {
         ok: true,
-        session: { id: url.searchParams.get('id'), title: '示例会话 1', turns: 7 },
+        session: {
+          id: url.searchParams.get('id') || 'demo-session-1',
+          title: '示例会话 1',
+          turns: 7,
+          todos: { total: 5, done: 3 },
+          toolStats: { edit: 4, shell: 3 },
+        },
         workspace: summary().workspaces[0],
         images: imagesFor(PROJECTS[0], 6),
       })
     }
     if (route === 'thumb' || route === 'file' || route === 'hero') {
-      const sha = url.searchParams.get('sha') || ''
-      const index = Number((sha.match(/(\d+)$/) || [])[1] || 0) % 8
-      return send(response, path.join(fixtures, `artwork-${index + 1}.jpg`), 'image/jpeg')
+      // 用 sha（demo-N）或 path（…_0N.jpg）里的序号选图，两者都要认
+      const key = url.searchParams.get('sha') || url.searchParams.get('path') || ''
+      const match = key.match(/(?:demo-|作品_0?)(\d+)(?:\.[a-z]+)?$/i)
+      const index = Number(match ? match[1] : 1)
+      const safe = ((index - 1) % 8 + 8) % 8
+      return send(response, path.join(fixtures, `artwork-${safe + 1}.jpg`), 'image/jpeg')
     }
     return json(response, { ok: false, message: 'demo' })
   }

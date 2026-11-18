@@ -33,10 +33,15 @@
             </div>
           </div>
           <div class="tb-side">
-            <div class="seg" id="seg">
+            <div class="seg seg-dim" id="seg-dim" title="看哪个范围：本次对话 / 当前项目 / 全部项目">
+              <button class="seg-item" data-dim="session" title="只显示本次对话里出现过的图">本次对话</button>
+              <button class="seg-item" data-dim="workspace" title="当前项目目录里 AI 看过的图 + 目录里的图">当前项目</button>
+              <button class="seg-item" data-dim="all" title="所有项目的最新图片（按天分组）">全部项目</button>
+            </div>
+            <div class="seg" id="seg" title="按来源筛：AI 会话里出现过的图 / 项目目录里的图">
               <button class="seg-item is-on" data-kind="all">全部</button>
               <button class="seg-item" data-kind="session">会话图</button>
-              <button class="seg-item" data-kind="file">磁盘图</button>
+              <button class="seg-item" data-kind="file" title="项目目录里的图：限深 3 层、跳过 node_modules/.git/dist、近 240 天、单张 ≤30MB（不是全盘搜索）">项目目录</button>
             </div>
             <input class="search" id="search" type="search" placeholder="搜文件名 / 会话标题" spellcheck="false" />
             <button class="icon-btn" id="refresh" title="重建索引">↻</button>

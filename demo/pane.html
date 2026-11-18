@@ -8,43 +8,44 @@
   html, body { margin: 0; height: 100%; }
   body {
     display: flex;
-    background: #fbfbfc;
+    background: #17171a;
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
-    color: #2c2c31;
+    color: #e8e8ec;
   }
   .conversation {
     flex: 1;
     padding: 26px 34px;
-    border-right: 1px solid #ececf0;
+    border-right: 1px solid #2a2a30;
     overflow: hidden;
   }
   .conversation .head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
   .conversation .head i { width: 9px; height: 9px; border-radius: 50%; background: #5b5bd6; display: block; }
-  .conversation .head b { font-size: 14px; font-weight: 600; }
+  .conversation .head b { font-size: 14px; font-weight: 600; color: #f2f2f5; }
   .conversation .head span { font-size: 12px; color: #9a9aa1; margin-left: auto; }
   .turn { margin-bottom: 18px; }
-  .turn .who { font-size: 11px; color: #9a9aa1; margin-bottom: 6px; }
-  .turn p { margin: 0 0 8px; font-size: 13px; line-height: 1.7; color: #3f4552; }
-  .ghost { height: 11px; border-radius: 6px; background: #f0f0f4; margin: 9px 0; }
+  .turn .who { font-size: 11px; color: #8b8b95; margin-bottom: 6px; }
+  .turn p { margin: 0 0 8px; font-size: 13px; line-height: 1.7; color: #c9c9d1; }
+  .ghost { height: 11px; border-radius: 6px; background: #26262c; margin: 9px 0; }
   .pane {
-    width: 420px;
-    flex: 0 0 420px;
-    background: #fff;
+    width: 470px;
+    flex: 0 0 470px;
+    background: #1d1d21;
     display: flex;
     flex-direction: column;
+    border-left: 1px solid #2a2a30;
   }
   .pane .tabs {
     display: flex; align-items: center; gap: 8px;
-    padding: 10px 12px; border-bottom: 1px solid #ececf0;
+    padding: 10px 12px; border-bottom: 1px solid #2a2a30;
   }
   .pane .tab {
     display: inline-flex; align-items: center; gap: 7px;
-    padding: 6px 12px; border-radius: 8px; background: #f2f2f6;
-    font-size: 12px; color: #3f4552;
+    padding: 6px 12px; border-radius: 8px; background: #2a2a31;
+    font-size: 12px; color: #c9c9d1;
   }
   .pane .tab b { width: 6px; height: 6px; border-radius: 50%; background: #5b5bd6; }
-  .pane .tab.is-on { background: #ebeafc; color: #2b2b6b; }
-  .pane .tab .x { color: #9a9aa1; margin-left: 4px; }
+  .pane .tab.is-on { background: #33334a; color: #dcdcf2; }
+  .pane .tab .x { color: #8b8b95; margin-left: 4px; }
   .pane iframe { flex: 1; width: 100%; border: 0; display: block; }
 </style>
 </head>
@@ -72,7 +73,7 @@
       <span class="tab"><b></b>会话</span>
       <span class="tab is-on"><b></b>项目相册<span class="x">✕</span></span>
     </div>
-    <iframe src="/session-gallery/?mode=dock&path=/demo/demo-atlas&theme=light" title="项目相册"></iframe>
+    <iframe src="/session-gallery/?mode=dock&path=/demo/demo-atlas&theme=dark" title="项目相册"></iframe>
   </div>
   <script>
     // 只用于示意：iframe 加载完后把水印放进去（和 shots.mjs 的页脚水印一致）

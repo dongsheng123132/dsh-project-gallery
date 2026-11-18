@@ -16,6 +16,15 @@ const state = {
   scope: 'all', // all | recent | todo | workspace
   activePath: params.get('path') || '',
   activeSession: params.get('session') || '',
+  // 维度：本次对话 / 当前项目 / 全部项目。默认按能拿到的上下文自动落。
+  dimension: params.get('dim') === 'all'
+    ? 'all'
+    : params.get('session')
+      ? 'session'
+      : params.get('path')
+        ? 'workspace'
+        : 'all',
+  session: null,
   kind: 'all',
   query: '',
   workspaces: [],
@@ -190,6 +199,36 @@ async function loadWorkspace(targetPath) {
   }
 }
 
+/** 按当前维度加载：本次对话 → 当前项目 → 全部项目（拿不到上下文就退到下一级）。 */
+async function loadDimension() {
+  if (state.dimension === 'session' && state.activeSession) return loadSessionView(state.activeSession)
+  if (state.dimension === 'workspace' && state.activePath) return loadWorkspace(state.activePath)
+  state.dimension = 'all'
+  return loadScopeImages()
+}
+
+async function loadSessionView(sessionId) {
+  state.loading = true
+  renderGrid()
+  try {
+    const data = await fetchJson(`${API}/session?id=${encodeURIComponent(sessionId)}`)
+    state.session = data.session || null
+    if (data.workspace && data.workspace.path) state.activePath = data.workspace.path
+    state.workspace = null
+    state.images = (data.images || []).filter(image => (state.kind === 'all' ? true : image.source === state.kind))
+    state.flat = state.images
+  } catch (error) {
+    // 会话可能已经被清理：退回「全部项目」，不要卡在空页
+    state.dimension = 'all'
+    toast('没找到这次对话的图片，先看全部项目')
+    return loadScopeImages()
+  } finally {
+    state.loading = false
+    renderGrid()
+    renderToolbar()
+  }
+}
+
 async function refreshAll(force) {
   if (force) {
     track('rebuild-index', '')
@@ -197,8 +236,7 @@ async function refreshAll(force) {
     await fetchJson(`${API}/reindex`, { method: 'POST' }).catch(() => null)
   }
   await loadSummary()
-  if (state.activePath) await loadWorkspace(state.activePath)
-  else await loadScopeImages()
+  await loadDimension()
   if (force) toast('索引已更新')
 }
 
@@ -264,8 +302,36 @@ function renderProgress(todos) {
   el('tb-progress-text').textContent = `进展 ${done}/${total}`
 }
 
+/** 维度按钮：当前拿不到会话/项目上下文时把对应按钮藏起来，避免点了没反应。 */
+function syncDimensionUI() {
+  const sessionButton = document.querySelector('#seg-dim [data-dim="session"]')
+  const workspaceButton = document.querySelector('#seg-dim [data-dim="workspace"]')
+  if (sessionButton) sessionButton.hidden = !state.activeSession
+  if (workspaceButton) workspaceButton.hidden = !state.activePath
+  if (!state.activeSession && state.dimension === 'session') state.dimension = 'all'
+  if (!state.activePath && state.dimension === 'workspace') state.dimension = 'all'
+  document.querySelectorAll('#seg-dim .seg-item').forEach(button => {
+    button.classList.toggle('is-on', button.dataset.dim === state.dimension)
+  })
+}
+
 function renderToolbar() {
-  if (state.activePath && state.workspace) {
+  syncDimensionUI()
+  if (state.dimension === 'session' && state.session) {
+    const session = state.session
+    $toolbarTitle.textContent = session.title || '本次对话'
+    const chips = [`<span class="chip">${state.images.length} 张</span>`]
+    if (session.todos) chips.push(`<span class="chip">待办 ${session.todos.done}/${session.todos.total}</span>`)
+    const tools = session.toolStats || {}
+    if (tools.edit) chips.push(`<span class="chip">改文件 ${tools.edit}</span>`)
+    if (tools.shell) chips.push(`<span class="chip">跑命令 ${tools.shell}</span>`)
+    if (session.turns) chips.push(`<span class="chip">${session.turns} 轮对话</span>`)
+    $toolbarChips.innerHTML = chips.join('')
+    renderProgress(session.todos)
+    document.title = `${session.title || '本次对话'} · 项目相册`
+    return
+  }
+  if (state.dimension === 'workspace' && state.activePath && state.workspace) {
     const workspace = state.workspace
     $toolbarTitle.textContent = state.activeSession ? '本次会话的图片' : workspace.name
     const chips = []
@@ -307,7 +373,9 @@ function renderGrid() {
     empty.innerHTML = state.loading
       ? '<p>正在整理图片…</p>'
       : state.scope === 'workspace'
-        ? '<p><b>这个项目还没有图片</b></p><p>AI 看过或生成过的图会出现在这里；也可以换成「全部图片」看别的项目。</p>'
+        ? '<p><b>这个项目还没有图片</b></p><p>AI 看过或生成过的图会出现在这里；也可以换成「全部项目」看别的项目。</p>'
+        : state.dimension === 'session'
+          ? '<p><b>这次对话还没有图片</b></p><p>让 AI 看一张图、截一张图，这里就会长出来；也可以切到「全部项目」。</p>'
         : '<p><b>还没有可展示的图片</b></p><p>在 DSH 里让 AI 看一张图、截一张图，或往项目目录里放几张设计稿，这里就会长出来。</p>'
     return
   }
@@ -527,6 +595,14 @@ function bind() {
     renderGrid()
   })
 
+  syncDimensionUI()
+  document.querySelectorAll('#seg-dim .seg-item').forEach(button => {
+    button.addEventListener('click', () => {
+      state.dimension = button.dataset.dim
+      syncDimensionUI()
+      loadDimension()
+    })
+  })
   el('refresh').addEventListener('click', () => refreshAll(true))
   const openRight = el('open-right')
   if (openRight) {
@@ -583,8 +659,7 @@ async function boot() {
   bind()
   postToHost({ type: 'dsh-gallery:ready', mode: MODE })
   await loadSummary()
-  if (state.activePath) await loadWorkspace(state.activePath)
-  else await loadScopeImages()
+  await loadDimension()
   track(MODE === 'dock' ? 'open-dock' : 'open-full', state.activePath)
   if (state.focusKey) {
     const index = state.images.findIndex(image => (image.sha || image.filePath || image.key) === state.focusKey)
