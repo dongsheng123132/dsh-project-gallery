@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.5 — 2026-11-18
+
+降负载：把「每分钟重写 7MB」和「浏览器每秒轮询」去掉，并留下可复跑的实测数据。
+
+- 新增 `index.state.json`（几十字节）：记录索引时间与「会话文件签名」。过期后先读它；
+  **签名没变就只 stat 会话文件**（不解析 2.9MB 索引、不重扫、不重写）——无变化刷新 macOS 145ms / Windows 297ms。
+- 真有变化才重写 `index.json` + `scan-cache.json`；没有变化只写几十字节状态文件。
+- 浏览器端去掉 `setInterval(ensureHeaderButton, 1200)` 的常驻轮询，改成 MutationObserver 等宿主头部出现（最多 12 秒）。
+- 进程内索引缓存 20s → 60s，与磁盘 TTL 对齐，悬停不再每 20 秒回读磁盘。
+- 新增 `scripts/bench.mjs`（`npm run bench`）与 [PERF.md](PERF.md)：macOS 与 Windows 两平台实测（冷建、刷新、内存、磁盘）。
+
 ## 0.1.4 — 2026-11-18
 
 修「卡片和面板一直显示旧图」——索引原来建一次就不再自动重建。

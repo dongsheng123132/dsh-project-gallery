@@ -88,7 +88,8 @@ https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/plugi
 ## 开发
 
 ```sh
-npm run check          # 语法 + 21 项单测（含宿主半片降级 6 项）
+npm run check          # 语法 + 26 项单测
+npm run bench          # 资源基准：建索引 / 刷新开销 / 内存（见 PERF.md）
 npm run shots          # 重新生成演示图（需要 playwright）
 ```
 

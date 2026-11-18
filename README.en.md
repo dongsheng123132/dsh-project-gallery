@@ -86,7 +86,8 @@ installation instead of degrading.
 ## Development
 
 ```sh
-npm run check                                    # syntax + 21 unit tests (6 host-half degradation cases)
+npm run check                                    # syntax + 26 unit tests (6 host-half degradation cases)
+npm run bench                                    # resource baseline: index build, refresh cost, memory (PERF.md)
 node scripts/compat-gate.mjs <dsh install dir>   # host's own compatibility evaluator
 npm run shots                                    # regenerate the demo screenshots (needs playwright)
 ```
