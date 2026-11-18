@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>悬停卡片 · 界面示意</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+  body.ui {
+    background: #fbfbfc;
+    display: flex;
+    width: 1200px;
+    height: 760px;
+    overflow: hidden;
+  }
+  .side {
+    width: 300px;
+    flex: 0 0 300px;
+    background: #f6f6f8;
+    border-right: 1px solid #ececf0;
+    padding: 16px 12px;
+  }
+  .side .head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px 14px; color: #8b8b93; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+  }
+  .side .head i { width: 8px; height: 8px; border-radius: 2px; background: #c7c7d1; display: block; }
+  .row {
+    position: relative;
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 10px; border-radius: 8px;
+    font-size: 13px; color: #2e2e34;
+  }
+  .row .dot { width: 7px; height: 7px; border-radius: 50%; background: #cfcfd7; flex: 0 0 7px; }
+  .row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .n { margin-left: auto; font-size: 11px; color: #a4a4ac; }
+  .row.active { background: #ecebfa; }
+  .row.active .dot { background: #5b5bd6; }
+  .row:hover { background: #f0f0f4; }
+  .main { flex: 1; padding: 26px 30px; color: #c3c3ca; font-size: 13px; }
+  .main .ghost { height: 12px; border-radius: 6px; background: #f1f1f4; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<script type="module">
+  const params = new URLSearchParams(location.search)
+  if (params.get('bg') !== 'none') document.body.classList.add('ui')
+
+  // 卡片样式直接取自浏览器半片 client.js 里的 CSS，避免两套样式漂移
+  const clientSource = await (await fetch('/session-gallery/client.js')).text()
+  const cssMatch = clientSource.match(/const CSS = `([\s\S]*?)`/)
+  if (!cssMatch) throw new Error('client.js 里没找到 CSS 块')
+  const style = document.createElement('style')
+  style.textContent = cssMatch[1]
+  document.head.append(style)
+
+  const summary = await (await fetch('/session-gallery/api/summary')).json()
+  const project = summary.workspaces[0]
+
+  const PEEK_CAPTION = data =>
+    `${data.imageCount} 张图 · 待办 ${data.todos.done}/${data.todos.total} · ${data.sessionCount} 次会话`
+
+  // 侧栏示意（只有背景模式才画）
+  if (document.body.classList.contains('ui')) {
+    const side = document.createElement('div')
+    side.className = 'side'
+    side.innerHTML = '<div class="head"><i></i>工作区</div>' + summary.workspaces.map((workspace, index) => `
+      <div class="row${index === 0 ? ' active' : ''}" data-index="${index}">
+        <span class="dot"></span>
+        <span class="name">${workspace.name}</span>
+        <span class="n">${workspace.imageCount}</span>
+      </div>`).join('')
+    const main = document.createElement('div')
+    main.className = 'main'
+    main.innerHTML = '<div class="ghost" style="width:38%"></div><div class="ghost" style="width:72%"></div><div class="ghost" style="width:58%"></div>'
+    document.body.append(side, main)
+  }
+
+  // 卡片：结构与 client.js 的 showPeek 一致
+  const card = document.createElement('div')
+  card.className = 'sg-peek'
+  card.style.position = 'fixed'
+  card.style.visibility = 'hidden'
+
+  const bar = document.createElement('div')
+  bar.className = 'sg-peek-bar'
+  const title = document.createElement('b')
+  title.textContent = project.name
+  title.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0'
+  const pin = document.createElement('button')
+  pin.className = 'sg-icon-btn'
+  pin.title = '固定住（鼠标移开也不消失）'
+  pin.textContent = '📌'
+  const close = document.createElement('button')
+  close.className = 'sg-icon-btn'
+  close.title = '关闭 (Esc)'
+  close.textContent = '✕'
+  bar.append(title, pin, close)
+
+  const caption = document.createElement('span')
+  caption.className = 'sg-peek-caption'
+  caption.textContent = PEEK_CAPTION(project)
+  caption.style.cssText = 'font-size:11px;color:#9a9aa1'
+
+  const grid = document.createElement('div')
+  grid.className = 'sg-peek-grid'
+  for (const image of project.thumbs.slice(0, 4)) {
+    const button = document.createElement('button')
+    button.className = 'sg-peek-thumb'
+    button.title = image.name || ''
+    const img = document.createElement('img')
+    img.src = `/session-gallery/api/thumb?sha=${encodeURIComponent(image.sha)}&w=200`
+    img.alt = image.name || ''
+    button.append(img)
+    grid.append(button)
+  }
+
+  const foot = document.createElement('div')
+  foot.className = 'sg-peek-foot'
+  const open = document.createElement('button')
+  open.className = 'sg-peek-open'
+  open.textContent = '打开相册'
+  const all = document.createElement('button')
+  all.className = 'sg-icon-btn'
+  all.style.width = '26px'
+  all.title = '全部项目（⌘⇧G）'
+  all.textContent = '▦'
+  const mute = document.createElement('button')
+  mute.className = 'sg-icon-btn'
+  mute.style.width = '26px'
+  mute.title = '不再自动预览'
+  mute.textContent = '⊘'
+  foot.append(open, all, mute)
+
+  card.append(bar, caption, grid, foot)
+  document.body.append(card)
+
+  // 定位：桌面模式贴在第二行右侧；透明模式放在左上角
+  if (document.body.classList.contains('ui')) {
+    const row = document.querySelectorAll('.row')[1] || document.querySelector('.row')
+    const rect = row.getBoundingClientRect()
+    card.style.left = `${Math.round(rect.right + 14)}px`
+    card.style.top = `${Math.round(rect.top)}px`
+  } else {
+    card.style.left = '0px'
+    card.style.top = '0px'
+  }
+  card.style.visibility = 'visible'
+  document.body.dataset.ready = '1'
+</script>
+</body>
+</html>

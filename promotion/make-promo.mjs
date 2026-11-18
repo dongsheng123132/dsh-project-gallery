@@ -32,6 +32,7 @@ const shotPath = path.join(root, 'docs', 'screenshots-demo', '03-lightbox.png')
 const pkg = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'))
 
 const shot = (await fs.readFile(shotPath)).toString('base64')
+const peek = (await fs.readFile(path.join(root, 'docs', 'screenshots-demo', 'card-transparent.png'))).toString('base64')
 
 const copy = {
   zh: {
@@ -46,6 +47,7 @@ const copy = {
     tags: ['只读本机', '零运行时依赖', 'DSH 0.2.1+', 'MIT 开源'],
     install: 'npm i dsh-project-gallery',
     repo: 'github.com/dongsheng123132/dsh-project-gallery',
+    hint: '悬停一行，先看最近 4 张',
   },
   en: {
     file: 'docs/promo-en.png',
@@ -59,6 +61,7 @@ const copy = {
     tags: ['Local only', 'Zero runtime deps', 'DSH 0.2.1+', 'MIT'],
     install: 'npm i dsh-project-gallery',
     repo: 'github.com/dongsheng123132/dsh-project-gallery',
+    hint: 'Hover a row to preview',
   },
 }
 
@@ -103,12 +106,25 @@ const html = c => `<!doctype html><html><head><meta charset="utf-8"><style>
   .repo { position: absolute; left: 90px; bottom: 56px; font-size: 17px; color: #6b7280; }
 
   .shot {
-    position: absolute; right: 64px; top: 112px; width: 760px;
+    position: absolute; right: 84px; top: 92px; width: 640px;
     border-radius: 20px; overflow: hidden; background: #fff;
     box-shadow: 0 30px 70px rgba(20,22,26,.18), 0 2px 6px rgba(20,22,26,.08);
     border: 1px solid rgba(20,22,26,.06);
   }
   .shot img { display: block; width: 100%; height: auto; }
+
+  .peek {
+    position: absolute; left: 668px; top: 452px; width: 268px;
+    filter: drop-shadow(0 26px 48px rgba(20,22,26,.28)) drop-shadow(0 3px 8px rgba(20,22,26,.18));
+  }
+  .peek img { display: block; width: 100%; height: auto; }
+  .peek-hint {
+    position: absolute; left: 668px; top: 410px;
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid #e7e2d8;
+    font-size: 15px; color: #3d4350; box-shadow: 0 6px 16px rgba(20,22,26,.07);
+  }
+  .peek-hint b { width: 7px; height: 7px; border-radius: 50%; background: #2f6bff; }
 </style></head><body>
   <div class="wash"><i></i><i></i><i></i></div>
   <div class="left">
@@ -120,10 +136,12 @@ const html = c => `<!doctype html><html><head><meta charset="utf-8"><style>
   <div class="install">${c.install}</div>
   <div class="repo">${c.repo}</div>
   <div class="shot"><img src="data:image/png;base64,${shot}" alt=""></div>
+  <div class="peek-hint"><b></b>${c.hint}</div>
+  <div class="peek"><img src="data:image/png;base64,${peek}" alt=""></div>
 </body></html>`
 
 const browser = await chromium.launch({ channel: 'chrome' })
-const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2 })
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1 })
 for (const c of Object.values(copy)) {
   await page.setContent(html(c), { waitUntil: 'load' })
   await page.locator('.shot img').evaluate(img => img.decode())

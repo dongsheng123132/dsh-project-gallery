@@ -23,6 +23,8 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 | 卡片里「打开相册」/ 点缩略图 | 右侧面板（420px）：按天分组的网格 + 搜索 + 会话图/磁盘图切换 |
 | 工作区头部 **📷** 或 **⌘⇧G** | 全局相册浮层：左侧按项目、右侧按天网格 |
 
+![悬停工作区行：先看最近 4 张，可固定、可静音](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/04-hover-card.png)
+
 ## 灯箱
 
 大图**不再铺满屏幕**：图在左、上下文在右（当时在做什么、时间/尺寸/体积/工具/来源/会话/第几轮/路径）、
@@ -30,8 +32,9 @@ DeepSeek Harness（DSH）插件：把会话里 AI 看过 / 生成过 / 交付过
 
 ![项目级面板：按天分组 + 搜索 + 会话图/磁盘图切换](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/02-project-dock.png)
 
-> 两张界面图都是**虚构数据**（`node demo/shots.mjs` 生成截图、`node promotion/make-promo.mjs` 合成促销图），
-> 不含任何真实项目或会话；来源与重生成步骤见 [docs/screenshots-demo/PROVENANCE.md](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/PROVENANCE.md)。
+> 截图与促销图都用**虚构数据**生成（`node demo/shots.mjs`、`node promotion/make-promo.mjs`）；演示图片是公共领域作品
+> （Met Open Access，CC0，来源见 [demo/fixtures/LICENSE-IMAGES.md](https://github.com/dongsheng123132/dsh-project-gallery/blob/main/demo/fixtures/LICENSE-IMAGES.md)），不含任何真实项目或会话。
+> 重生成步骤与逐图来源见 [docs/screenshots-demo/PROVENANCE.md](https://github.com/dongsheng123132/dsh-project-gallery/blob/main/docs/screenshots-demo/PROVENANCE.md)。
 
 ## 数据从哪来
 

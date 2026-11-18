@@ -15,8 +15,9 @@ row for the latest few; open the album; open an image and see **what you asked f
 
 ![Project Gallery: image left, the conversation behind it right](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/promo-en.png)
 
-> The interface is currently Chinese-only; this English page documents it. Both images use **fictional data**
-> (`node demo/shots.mjs`, `node promotion/make-promo.mjs`) — no real project or session appears in them.
+> The interface is currently Chinese-only; this English page documents it. Screenshots use **fictional data**
+> (`node demo/shots.mjs`, `node promotion/make-promo.mjs`); the demo images are public-domain artworks (Met Open
+> Access, CC0 — see [demo/fixtures/LICENSE-IMAGES.md](https://github.com/dongsheng123132/dsh-project-gallery/blob/main/demo/fixtures/LICENSE-IMAGES.md)).
 
 ## Three entry points
 
@@ -25,6 +26,8 @@ row for the latest few; open the album; open an image and see **what you asked f
 | Hover a project / chat row, then its **⋯ area on the right** | A small card: project name, "N images · todos x/y", 2×2 thumbnails; can be 📌 pinned, and a project can be ⊘ muted |
 | "Open album" in the card, or click a thumbnail | Right-side panel (420px): day-grouped grid, search, session-images / on-disk-images switch |
 | **📷** in the workspace header, or **⌘⇧G** | Global album overlay: projects on the left, day-grouped grid on the right |
+
+![Hovering a workspace row: the latest four images, pinnable and mutable](https://raw.githubusercontent.com/dongsheng123132/dsh-project-gallery/main/docs/screenshots-demo/04-hover-card.png)
 
 ## Lightbox
 

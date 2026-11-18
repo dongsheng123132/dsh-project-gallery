@@ -53,6 +53,7 @@ const shots = [
   { file: '01-global-album.png', url: '?mode=full&theme=light', wait: '.cell' },
   { file: '02-project-dock.png', url: '?mode=dock&path=/demo/demo-atlas&theme=light', wait: '.cell' },
   { file: '03-lightbox.png', url: '?mode=dock&path=/demo/demo-atlas&theme=light', wait: '.cell', click: '.cell' },
+  { file: '04-hover-card.png', url: 'card', wait: '.sg-peek-grid img', ready: true },
 ]
 
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -78,6 +79,7 @@ async function mark() {
 for (const shot of shots) {
   await page.goto(base + shot.url, { waitUntil: 'domcontentloaded' })
   await page.waitForSelector(shot.wait, { timeout: 20000 })
+  if (shot.ready) await page.waitForFunction(() => document.body.dataset.ready === '1')
   await page.waitForTimeout(900)
   if (shot.click) {
     await page.click(shot.click)
@@ -86,6 +88,23 @@ for (const shot of shots) {
   await mark()
   await page.screenshot({ path: path.join(out, shot.file) })
   console.log(`✓ ${shot.file}`)
+}
+
+// 透明底卡片：给促销图当浮层用
+{
+  const shotContext = await browser.newContext({ viewport: { width: 560, height: 460 }, deviceScaleFactor: 2, colorScheme: 'light', omitBackground: true })
+  const shotPage = await shotContext.newPage()
+  await shotPage.goto(base + 'card?bg=none', { waitUntil: 'domcontentloaded' })
+  await shotPage.waitForFunction(() => document.body.dataset.ready === '1')
+  await shotPage.waitForTimeout(300)
+  const box = await shotPage.locator('.sg-peek').boundingBox()
+  await shotPage.screenshot({
+    path: path.join(out, 'card-transparent.png'),
+    clip: { x: 0, y: 0, width: Math.ceil(box.width) + 12, height: Math.ceil(box.height) + 12 },
+    omitBackground: true,
+  })
+  console.log('✓ card-transparent.png')
+  await shotContext.close()
 }
 
 await browser.close()

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3 — 2026-11-18
+
+演示素材换成公共领域作品；补上「悬停卡片」的对外图。
+
+- `demo/fixtures/` 由程序绘制的 4 张插画换成 **8 张 Met Open Access 公共领域作品（CC0）**，逐张来源见
+  `demo/fixtures/LICENSE-IMAGES.md`；演示项目名与对话文案同步改成画册语境。
+- 新增 `demo/card.html`：悬停卡片的独立演示页，**卡片样式直接读 `client.js` 的 CSS 块**，不另写一套；
+  新增截图 `docs/screenshots-demo/04-hover-card.png` 与透明底 `card-transparent.png`。
+- 促销图重做：右侧灯箱 + 左下浮出悬停卡片（1600×900，`promotion/make-promo.mjs`）。
+- npm 包不再包含 `demo/` 与 `docs/screenshots-demo/`（README 用 raw URL 引用），安装体积回到 340 KB 量级。
+
 ## 0.1.2 — 2026-11-18
 
 回归测试与门面版本；行为不变（只有一处可选配置透传）。
