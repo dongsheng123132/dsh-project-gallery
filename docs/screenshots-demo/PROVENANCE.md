@@ -13,3 +13,11 @@
 | `01-global-album.png` | 全局相册：左侧按项目、右侧按天分组网格 |
 | `02-project-dock.png` | 项目级右侧面板：项目名 + 统计 chips + 搜索 + 网格 |
 | `03-lightbox.png` | 灯箱：图左 / 上下文右（当时在做什么、元信息、动作）/ 胶片条在下 |
+
+## 促销图（`docs/promo-zh.png` / `docs/promo-en.png`）
+
+同样只用虚构数据：
+
+- 界面部分：`03-lightbox.png`（上面那张，虚构项目与虚构插画）缩放进右侧窗口；
+- 文字、标签、安装命令、背景由 `promotion/make-promo.mjs` 现场排版渲染（Playwright + 本机 Chrome，1600×900 @2x）；
+- 不含任何真实项目名、路径、会话或截图。
