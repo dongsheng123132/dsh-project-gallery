@@ -247,7 +247,7 @@ window.__ModuleLoader__.load({
       placeTimers: [],
       global: null,
       globalFrame: null,
-      headerTimer: null,
+      stopHeaderWatch: null,
     }
 
     async function loadSummary() {
@@ -825,9 +825,30 @@ window.__ModuleLoader__.load({
       on(document, 'scroll', onScroll, true)
 
       ensureHeaderButton()
-      const headerTimer = setInterval(ensureHeaderButton, 1200)
-      hoverState.headerTimer = headerTimer
-      teardown.push(() => clearInterval(headerTimer))
+      // 宿主头部按钮可能比插件晚挂载：用 MutationObserver 等它出现，最多等 12 秒。
+      // 不用常驻 setInterval(1200)：那会让主线程每秒都醒一次，纯属白耗。
+      let headerObserver = null
+      let headerGiveUp = 0
+      const stopHeaderWatch = () => {
+        if (headerObserver) {
+          headerObserver.disconnect()
+          headerObserver = null
+        }
+        if (headerGiveUp) {
+          clearTimeout(headerGiveUp)
+          headerGiveUp = 0
+        }
+      }
+      if (!document.querySelector('[data-sg-header]')) {
+        headerObserver = new MutationObserver(() => {
+          ensureHeaderButton()
+          if (document.querySelector('[data-sg-header]')) stopHeaderWatch()
+        })
+        headerObserver.observe(document.body, { childList: true, subtree: true })
+        headerGiveUp = setTimeout(stopHeaderWatch, 12_000)
+      }
+      hoverState.stopHeaderWatch = stopHeaderWatch
+      teardown.push(stopHeaderWatch)
 
       on(document, 'keydown', event => {
         if ((event.metaKey || event.ctrlKey) && event.shiftKey && (event.key === 'g' || event.key === 'G')) {
@@ -954,7 +975,7 @@ window.__ModuleLoader__.load({
           hideStrip(true)
           closeDock()
           closeGlobal()
-          if (hoverState.headerTimer) clearInterval(hoverState.headerTimer)
+          if (hoverState.stopHeaderWatch) hoverState.stopHeaderWatch()
         }
       })
     }

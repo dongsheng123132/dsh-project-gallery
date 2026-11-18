@@ -112,14 +112,19 @@ export function createGalleryApi(options) {
   let building = null
 
   async function index(force) {
-    // 进程内缓存 20s：一次悬停会打多个接口，别每个都去读 3.7MB 的 index.json。
-    // 磁盘索引另有 60s TTL（build-index 的 INDEX_TTL_MS），过期才做增量扫描。
-    if (!force && cachedIndex && Date.now() - cachedAt < 20_000) return cachedIndex
+    // 进程内缓存 60s（与磁盘 TTL 对齐）：一次悬停会打多个接口，命中内存就不再碰磁盘；
+    // 过期后 readOrBuildIndex 先读几十字节的状态文件，签名没变就连索引都不解析。
+    if (!force && cachedIndex && Date.now() - cachedAt < 60_000) return cachedIndex
     if (building) return building
     building = (async () => {
-      const next = force
-        ? await buildIndex({ storeDir, attachmentsRoot, sessionsRoot, log })
-        : await readOrBuildIndex({ storeDir, attachmentsRoot, sessionsRoot, log })
+      const next = await readOrBuildIndex({
+        storeDir,
+        attachmentsRoot,
+        sessionsRoot,
+        log,
+        force,
+        previous: force ? undefined : cachedIndex,
+      })
       cachedIndex = next
       cachedAt = Date.now()
       return next

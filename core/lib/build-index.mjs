@@ -97,6 +97,28 @@ async function listSessionFiles(sessionsRoot) {
   return files
 }
 
+/** 索引状态：只记 builtAt 与「会话文件签名」，用来判断要不要重建（比读整份索引便宜得多）。 */
+function readState(stateFile) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(stateFile, 'utf8'))
+    if (parsed && parsed.version === INDEX_VERSION) return parsed
+  } catch (error) {
+    /* 没有就当作过期 */
+  }
+  return null
+}
+
+/** 会话文件的轻量签名：数量 + 最大 mtime + 总字节。任一变化都意味着要重扫。 */
+function signatureOf(files) {
+  let maxMtime = 0
+  let totalBytes = 0
+  for (const entry of files) {
+    if (entry.mtimeMs > maxMtime) maxMtime = entry.mtimeMs
+    totalBytes += entry.size
+  }
+  return `${files.length}-${Math.round(maxMtime)}-${totalBytes}`
+}
+
 function loadCache(cacheFile) {
   try {
     const parsed = JSON.parse(fs.readFileSync(cacheFile, 'utf8'))
@@ -122,9 +144,32 @@ export async function buildIndex(options = {}) {
   await fsp.mkdir(storeDir, { recursive: true })
   const indexFile = path.join(storeDir, 'index.json')
   const cacheFile = path.join(storeDir, 'scan-cache.json')
-  const cache = loadCache(cacheFile)
+  const stateFile = path.join(storeDir, 'index.state.json')
 
   const files = await listSessionFiles(sessionsRoot)
+  const signature = signatureOf(files)
+  const state = readState(stateFile)
+
+  // 签名没变：不扫会话、不重写索引，只把 builtAt 刷新一下。
+  // 进程里已有索引（options.previous）就直接用，省掉读 2.9MB + 解析的 14ms。
+  if (!options.force && state && state.signature === signature) {
+    let index = options.previous
+    if (!index) {
+      try {
+        const parsed = JSON.parse(await fsp.readFile(indexFile, 'utf8'))
+        if (parsed && parsed.version === INDEX_VERSION) index = parsed
+      } catch (error) {
+        index = null
+      }
+    }
+    if (index) {
+      index.builtAt = Date.now()
+      await fsp.writeFile(stateFile, JSON.stringify({ version: INDEX_VERSION, builtAt: index.builtAt, signature }))
+      return index
+    }
+  }
+
+  const cache = loadCache(cacheFile)
   const nextCache = { version: INDEX_VERSION, sessions: {} }
   const scanned = []
   let reused = 0
@@ -249,8 +294,12 @@ export async function buildIndex(options = {}) {
   }
 
   if (options.write !== false) {
-    await fsp.writeFile(indexFile, JSON.stringify(index))
-    await fsp.writeFile(cacheFile, JSON.stringify(nextCache))
+    // 只有真的扫到变化才重写 2.9MB 索引 + 4.1MB 缓存；没变化时只写几十字节的状态文件。
+    if (fresh > 0 || failures > 0 || !fs.existsSync(indexFile)) {
+      await fsp.writeFile(indexFile, JSON.stringify(index))
+      await fsp.writeFile(cacheFile, JSON.stringify(nextCache))
+    }
+    await fsp.writeFile(stateFile, JSON.stringify({ version: INDEX_VERSION, builtAt: index.builtAt, signature }))
   }
   log(
     `索引完成：${index.stats.workspaces} 工作区 / ${index.stats.sessions} 会话 / ${index.stats.images} 图 / ` +
@@ -268,16 +317,21 @@ export async function buildIndex(options = {}) {
  */
 export async function readOrBuildIndex(options = {}) {
   const storeDir = options.storeDir || defaultStoreDir()
-  const indexFile = path.join(storeDir, 'index.json')
   const ttlMs = options.ttlMs ?? INDEX_TTL_MS
-  try {
-    const parsed = JSON.parse(await fsp.readFile(indexFile, 'utf8'))
-    if (parsed && parsed.version === INDEX_VERSION) {
-      const age = Date.now() - Number(parsed.builtAt || 0)
-      if (Number.isFinite(age) && age >= 0 && age < ttlMs) return parsed
+
+  // 先看几十字节的状态文件，别为了判断「新不新」去解析 2.9MB 的索引。
+  const state = readState(path.join(storeDir, 'index.state.json'))
+  if (state) {
+    const age = Date.now() - Number(state.builtAt || 0)
+    if (Number.isFinite(age) && age >= 0 && age < ttlMs) {
+      if (options.previous) return options.previous
+      try {
+        const parsed = JSON.parse(await fsp.readFile(path.join(storeDir, 'index.json'), 'utf8'))
+        if (parsed && parsed.version === INDEX_VERSION) return parsed
+      } catch (error) {
+        /* 索引文件坏了就重建 */
+      }
     }
-  } catch (error) {
-    /* 没索引就建 */
   }
   return buildIndex(options)
 }
