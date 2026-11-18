@@ -145,6 +145,23 @@ npm run shots          # 重新生成演示图（需要 playwright）
 - 搜索结果里的会话行没有 `data-row-key`，悬停不生效，请用全局相册。
 - 同一张图出现在多个会话时，各会话各自保留一条关联（这是真实状态，不做跨会话合并）。
 
+## 常见问题
+
+**装完在哪里找？** 四个入口：悬停项目/对话行右侧的 ⋯ 区、卡片里「打开相册」、工作区头部 **📷** / **⌘⇧G**、右栏「更多工具 → 项目相册」。
+
+**右栏没有「项目相册」tab？** 这个 tab 需要宿主的 `sidebarRightTabs` + `slots` 席位（DSH ≥ 0.2.1-rc.5 有）。
+老宿主上插件会自动退回右侧浮层，功能不丢。装完没看到就重启一次 DSH。
+
+**图不是最新的？** 索引 60 秒内复用、过期做增量刷新；想立刻刷新点面板底部的「重建索引」，或重启 DSH。
+
+**「项目目录」是不是扫整个磁盘？** 不是。只扫**当前项目目录**：限深 3 层、跳过 `node_modules/.git/dist`、近 240 天、单张 ≤30MB。
+
+**占资源吗？** 平时不占 CPU（无常驻定时器），开销只在索引过期且你正在看图时发生。实测数字见 [PERF.md](https://github.com/dongsheng123132/dsh-project-gallery/blob/main/PERF.md)。
+
+**隐私？** 只读本机文件，不发网络请求、无遥测；索引与缩略图缓存都在本机。
+
+**怎么卸载？** `dsh plugin --profile <你的 profile> remove dsh-project-gallery`，再删掉 `~/.dsh/cache/dsh-session-gallery` 即可。
+
 ## License
 
 MIT
