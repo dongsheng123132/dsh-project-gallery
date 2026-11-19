@@ -72,9 +72,10 @@ dimensions, size, tool, source, session, turn number, path), that session's imag
 DSH desktop: **Settings → Plugins → Add plugin**, then enter `dsh-project-gallery`.
 
 ```sh
-dsh plugin --profile <your profile> add dsh-project-gallery
+dsh plugin --profile web add dsh-project-gallery
+# desktop app: swap web for desktop (--profile desktop)
 # or track main instead of npm:
-dsh plugin --profile <your profile> add github:dongsheng123132/dsh-project-gallery
+dsh plugin --profile web add github:dongsheng123132/dsh-project-gallery
 ```
 
 Restart DSH afterwards. The entry point sits in the left tool area (position varies slightly by DSH version).

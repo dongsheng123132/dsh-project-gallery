@@ -96,13 +96,15 @@ DSH 桌面版：**设置 → 插件 → 添加插件**，填 `dsh-project-galler
 或者命令行：
 
 ```sh
-dsh plugin --profile <你的 profile> add dsh-project-gallery
+dsh plugin --profile web add dsh-project-gallery
 ```
+
+桌面版把 `web` 换成 `desktop`：`dsh plugin --profile desktop add dsh-project-gallery`。
 
 想比 npm 版更新（跟 main 走）：
 
 ```sh
-dsh plugin --profile <你的 profile> add github:dongsheng123132/dsh-project-gallery
+dsh plugin --profile web add github:dongsheng123132/dsh-project-gallery
 ```
 
 clone 本仓库后本地装：`node scripts/install.mjs --profile desktop`。
@@ -160,7 +162,7 @@ npm run shots          # 重新生成演示图（需要 playwright）
 
 **隐私？** 只读本机文件，不发网络请求、无遥测；索引与缩略图缓存都在本机。
 
-**怎么卸载？** `dsh plugin --profile <你的 profile> remove dsh-project-gallery`，再删掉 `~/.dsh/cache/dsh-session-gallery` 即可。
+**怎么卸载？** `dsh plugin --profile web remove dsh-project-gallery`，再删掉 `~/.dsh/cache/dsh-session-gallery` 即可。
 
 ## License
 
